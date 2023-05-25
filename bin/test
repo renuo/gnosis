@@ -1,0 +1,18 @@
+#!/bin/bash
+
+white='\033[1;37m'
+red='\033[0;31m'
+green='\033[0;32m'
+
+rake redmine:plugins:test
+
+if [[ $? -eq 0 ]]; then
+  echo -e "${green}----------------------------------------"
+  echo -e "Tests passed"
+  echo -e "----------------------------------------${white}"
+else
+  echo -e "${red}----------------------------------------"
+  echo -e "Tests failed"
+  echo -e "----------------------------------------${white}"
+  exit 1
+fi

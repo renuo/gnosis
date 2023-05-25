@@ -1,0 +1,12 @@
+source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+group :test, :development do
+  # Rubocop
+  gem 'rubocop', '~> 1.50.0'
+  gem 'rubocop-performance', '~> 1.17.1'
+  gem 'rubocop-rails', '~> 2.19.1'
+
+  # Brakeman
+  gem 'brakeman'
+end

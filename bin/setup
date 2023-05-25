@@ -1,0 +1,3 @@
+BUNDLE_GEMFILE=PluginGemfile bundle install
+yarn install
+bundle exec rake redmine:plugins:migrate

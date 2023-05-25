@@ -1,0 +1,44 @@
+#!/bin/bash
+
+white='\033[1;37m'
+red='\033[0;31m'
+green='\033[0;32m'
+
+function return_code {
+  if [ $? -ne 0 ]; then
+    echo -e "${red} Error: $1 found errors! ${white}"
+    failing_checks+=("$1")
+    passing=false
+  fi
+}
+
+passing=true
+failing_checks=()
+
+echo "Executing fastchecks..."
+
+if [[ $* == *--fix* ]]; then
+  echo "Fixing..."
+  BUNDLE_GEMFILE=PluginGemfile bundle exec rubocop -a --config .rubocop.yml
+  return_code "Rubocop"
+else 
+  echo "Note: You can use --fix to fix the errors automatically"
+  BUNDLE_GEMFILE=PluginGemfile bundle exec rubocop --config .rubocop.yml
+  return_code "Rubocop"
+fi
+
+bundle exec brakeman -q -z --no-summary --no-pager
+return_code "Brakeman"
+
+if [ "$passing" = true ]; then
+  echo -e "${green}----------------------------------------"
+  echo -e "All checks passed"
+  echo -e "----------------------------------------${white}"
+  exit 0
+  else
+  echo -e "${red}----------------------------------------"
+  echo -e "Some checks failed"
+  echo -e "Failed checks: ${failing_checks[@]}"
+  echo -e "----------------------------------------${white}"
+  exit 1
+fi
