@@ -24,6 +24,9 @@ require:
 
 # Rules for Redmine
 
+Rails/ActionControllerTestCase:
+  Enabled: false
+
 Bundler/OrderedGems:
   Enabled: false
 
