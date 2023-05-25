@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
   author 'Author name'

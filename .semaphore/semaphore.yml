@@ -1,0 +1,35 @@
+version: v1.0
+name: Initial Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Checks
+    task:
+      jobs:
+        - name: Tests
+          commands:
+            - bin/test
+        - name: Linter
+          commands:
+            - bin/fastcheck
+      prologue:
+        commands:
+          - 'git clone git@github.com:redmine/redmine.git'
+          - cd redmine
+          - cp config/configuration.yml.example config/configuration.yml
+          - 'git clone git@github.com:aneshodza/redmine-postgres-database-yml.git'
+          - cp redmine-postgres-database-yml/database.yml config/database.yml
+          - rm -rf redmine-postgres-database-yml
+          - bin/bundle install
+          - yarn
+          - sem-service start postgres --username="root" --password=""
+          - 'bin/rails db:create'
+          - 'bin/rails db:migrate'
+          - cd plugins
+          - checkout
+          - cd ../../
+          - bin/bundle install
+          - cd plugins/gnosis
+          - bin/setup
