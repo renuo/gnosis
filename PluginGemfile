@@ -4,4 +4,10 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 group :test, :development do
   # Brakeman
   gem 'brakeman'
+
+  # FactoryBot
+  gem 'factory_bot_rails'
+
+  # Faker
+  gem 'faker'
 end
