@@ -2,6 +2,8 @@
 
 require 'simplecov'
 
+ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
+
 SimpleCov.coverage_dir('plugins/gnosis/coverage')
 SimpleCov.start do
   add_filter do |source_file|
@@ -18,7 +20,7 @@ SimpleCov.minimum_coverage 100
 FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
 FactoryBot.find_definitions
 
-Dir[Rails.root.join('plugins/gnosis/app/**/*.rb')].each { |f| load f }
+# Dir[Rails.root.join('plugins/gnosis/app/**/*.rb')].each { |f| load f }
 
 # Load the Redmine helper
 require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")

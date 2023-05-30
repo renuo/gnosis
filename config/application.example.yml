@@ -1,0 +1,2 @@
+GITHUB_WEBHOOK_SECRET: 'your_secret'
+GITHUB_ACCESS_TOKEN: 'your_token'
