@@ -3,6 +3,7 @@
 require 'simplecov'
 
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
+ENV['SEMAPHORE_WEBHOOK_SECRET'] = 'test'
 
 SimpleCov.coverage_dir('plugins/gnosis/coverage')
 SimpleCov.start do
