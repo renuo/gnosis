@@ -2,9 +2,9 @@
 
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
+  author 'Anes Hodza'
+  description 'This Plugin allows you to see the status of issues in a project'
   version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  url 'https://github.com/aneshodza/gnosis/'
+  author_url 'https://www.aneshodza.ch/'
 end
