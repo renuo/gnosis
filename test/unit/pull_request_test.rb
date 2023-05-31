@@ -30,4 +30,16 @@ class PullRequestTest < ActiveSupport::TestCase
     pr = PullRequest.last
     assert_equal 'merged', pr.state
   end
+
+  def test_update_pull_request
+    PullRequest.auto_create_or_update(@github_webhook_hash)
+    @github_webhook_hash[:pull_request][:state] = 'open'
+    @github_webhook_hash[:pull_request][:merged] = false
+    assert_difference('PullRequest.count', 0) do
+      PullRequest.auto_create_or_update(@github_webhook_hash)
+    end
+
+    pr = PullRequest.last
+    assert_equal 'open', pr.state
+  end
 end

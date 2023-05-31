@@ -12,7 +12,9 @@ class DeploymentTest < ActiveSupport::TestCase
     FactoryBot.create(:pull_request)
     deploy = FactoryBot.create(:deployment)
 
-    Deployment.auto_create_or_update(deploy.deploy_branch, deploy.pull_request_id, 'aneshodza.ch', !deploy.has_passed)
+    assert_difference 'Deployment.count', 0 do
+      Deployment.auto_create_or_update(deploy.deploy_branch, deploy.pull_request_id, 'aneshodza.ch', !deploy.has_passed)
+    end
 
     assert_equal deploy.reload.url, 'aneshodza.ch'
   end

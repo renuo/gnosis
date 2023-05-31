@@ -67,6 +67,18 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
     assert_equal 1, new_pr.issue_id
   end
 
+  def test_update_pull_request_existing_url
+    PullRequest.auto_create_or_update(@github_webhook_hash.merge(issue_id: Issue.first.id))
+    @request.headers['X-Hub-Signature-256'] =
+      'sha256=ed37b875f6877950542db3adbb9ba9d53ecb071970f90b234c37f2acd48e1cb3'
+    @github_webhook_hash[:pull_request][:state] = 'open'
+    assert_difference('PullRequest.count', 0) do
+      post :github_webhook_catcher, params: @github_webhook_hash, as: :json
+    end
+    assert @response.status == 200
+    assert 'closed', PullRequest.last.state
+  end
+
   def test_create_pull_request_no_issue
     @request.headers['X-Hub-Signature-256'] = 'sha256=b15df5baab94e31571b043e810545ec49075dedb0dd7aa78b8f185501248c918'
     @github_webhook_hash[:pull_request][:head][:ref] = 'feature/420-some-feature-no-issue'
