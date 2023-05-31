@@ -6,5 +6,6 @@ group :test, :development do
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'byebug'
-  gem 'octokit'
 end
+
+gem 'octokit'
