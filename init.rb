@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'redmine'
+require_relative 'lib/issue_details_hook_listener'
+
 yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
 ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
 

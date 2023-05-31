@@ -2,6 +2,7 @@
 
 require 'simplecov'
 
+ENV['GOOGLE_CHROME_OPTS_ARGS'] = 'headless,disable-gpu,no-sandbox,disable-dev-shm-usage'
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
 ENV['SEMAPHORE_WEBHOOK_SECRET'] = 'test'
 
@@ -12,7 +13,7 @@ SimpleCov.start do
   end
 
   add_filter do |source_file|
-    source_file.filename.exclude?('gnosis/app')
+    source_file.filename.exclude?('gnosis/app') && source_file.filename.exclude?('gnosis/lib')
   end
 end
 
@@ -44,6 +45,8 @@ User.create!(
 
 name = Faker::Lorem.word
 Project.create!(name: name, identifier: name.downcase, is_public: false, description: '…', issues: [
+                  Issue.new(subject: Faker::Lorem.word, description: '…', tracker: Tracker.first, author: User.first,
+                            status: IssueStatus.first, priority: IssuePriority.first),
                   Issue.new(subject: Faker::Lorem.word, description: '…', tracker: Tracker.first, author: User.first,
                             status: IssueStatus.first, priority: IssuePriority.first)
                 ])
