@@ -40,6 +40,7 @@ class NewSectionHookListener < Redmine::Hook::ViewListener
             <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>
               on "#{deployment['deploy_branch']}"
               at #{deployment['ci_date'].strftime('%d.%m.%Y at %I:%M%p UTC')}
+              #{deployment['has_passed'] ? '✅' : '❌'}
             </a>
           </li>
         LISTOBJECT

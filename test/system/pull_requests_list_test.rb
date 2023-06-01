@@ -37,6 +37,7 @@ class PullRequestListTest < GnosisSystemTest
         assert page.has_content?(deployment.deploy_branch)
         assert_includes page.find("#deployment-#{deployment.id}")['href'], deployment.url
         assert page.has_content?(deployment.ci_date.strftime('%d.%m.%Y at %I:%M%p UTC'))
+        assert page.has_content?(deployment.has_passed ? '✅' : '❌')
       end
     end
   end

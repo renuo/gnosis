@@ -24,7 +24,8 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
           ref: 'main'
         },
         merged: true,
-        merge_commit_sha: '19a89f0050eacf201ccd058d5e28cddf2b035bfc'
+        merge_commit_sha: '19a89f0050eacf201ccd058d5e28cddf2b035bfc',
+        draft: false
       }
     }
 
@@ -58,7 +59,7 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
 
   def test_create_pull_request
     @request.headers['X-Hub-Signature-256'] =
-      'sha256=a61084e5bafb012607e8b4ea9f37260774bf1f00617861f2ae7aef73888234f7'
+      'sha256=09a2bb0a3c451c2dd5c2c227e05b0f2da426211b1b67c09bc724b1ea851538ce'
     assert_difference('PullRequest.count', 1) do
       post :github_webhook_catcher, params: @github_webhook_hash, as: :json
     end
@@ -71,7 +72,7 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
   def test_update_pull_request_existing_url
     PullRequest.auto_create_or_update(@github_webhook_hash.merge(issue_id: Issue.first.id))
     @request.headers['X-Hub-Signature-256'] =
-      'sha256=ed37b875f6877950542db3adbb9ba9d53ecb071970f90b234c37f2acd48e1cb3'
+      'sha256=4256f0ad4e317084d15e7ffeecb6e66667f45d12fcbd5ad0fecf4c0e31802ce2'
     @github_webhook_hash[:pull_request][:state] = 'open'
     assert_difference('PullRequest.count', 0) do
       post :github_webhook_catcher, params: @github_webhook_hash, as: :json
@@ -89,7 +90,7 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
   end
 
   def test_create_pull_request_no_issue_in_branch_name
-    @request.headers['X-Hub-Signature-256'] = 'sha256=5660dd5179a31c18d5b064cc4ee0293f76c5b9e61ed22be9894ba7b585005109'
+    @request.headers['X-Hub-Signature-256'] = 'sha256=2d44814be7f48dce09dc87544720819beab8be0747381d0c45c4301f1eef2a1b'
     @github_webhook_hash[:pull_request][:head][:ref] = 'feature/some-feature-no-issue'
     assert_difference('PullRequest.count', 0) do
       post :github_webhook_catcher, params: @github_webhook_hash, as: :json
