@@ -45,12 +45,13 @@ class WebhooksController < ApplicationController
     branch = params[:revision][:branch][:name]
     repo = params[:repository][:slug]
     passed = params[:pipeline][:result] == 'passed'
+    time = params[:pipeline][:done_at]
 
     first_sha = range.split('...').first
     last_sha = range.split('...').last
 
     sha_between = fetch_commit_history(repo, branch, first_sha, last_sha)
-    create_deploys_for_pull_requests(sha_between, branch, passed)
+    create_deploys_for_pull_requests(sha_between, branch, passed, time)
   end
 
   def verify_signature(payload_body, recieved_signature, secret)
@@ -67,12 +68,12 @@ class WebhooksController < ApplicationController
     commit_sha_list[last_commit_index..first_commit_index]
   end
 
-  def create_deploys_for_pull_requests(sha_between, branch, passed)
+  def create_deploys_for_pull_requests(sha_between, branch, passed, time)
     sha_between.each do |sha|
       pr = PullRequest.find_by(merge_commit_sha: sha)
       next unless pr
 
-      Deployment.auto_create_or_update(branch, pr.id, url, passed)
+      Deployment.auto_create_or_update(branch, pr.id, url, passed, time)
     end
   end
 

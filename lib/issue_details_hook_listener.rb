@@ -37,7 +37,10 @@ class NewSectionHookListener < Redmine::Hook::ViewListener
       deployment_list.each do |deployment|
         formatted_deployment_list << <<-LISTOBJECT
           <li>
-            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>#{deployment['deploy_branch']}</a>
+            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>
+              on "#{deployment['deploy_branch']}"
+              at #{deployment['ci_date'].strftime('%d.%m.%Y at %I:%M%p UTC')}
+            </a>
           </li>
         LISTOBJECT
       end
@@ -50,7 +53,8 @@ class NewSectionHookListener < Redmine::Hook::ViewListener
       formatted_deployments_list = @deployments_strings[index].join
       <<-LISTOBJECT
       <li>
-        <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}'>#{pr['title']} (#{pr['state']})</a>
+        <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}'>#{pr['title']} (#{pr['state']})</a> <br/>
+        #{formatted_deployments_list.length.positive? ? '<strong>Deployments:</strong>' : ''}
         <ul>
           #{formatted_deployments_list}
         </ul>  

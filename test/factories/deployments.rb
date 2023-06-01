@@ -5,6 +5,7 @@ FactoryBot.define do
     deploy_branch { 'main' }
     url { 'example.com' }
     has_passed { true }
+    ci_date { Time.zone.now }
 
     pull_request { create(:pull_request) }
   end

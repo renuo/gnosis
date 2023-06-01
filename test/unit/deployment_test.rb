@@ -13,7 +13,8 @@ class DeploymentTest < ActiveSupport::TestCase
     deploy = FactoryBot.create(:deployment)
 
     assert_difference 'Deployment.count', 0 do
-      Deployment.auto_create_or_update(deploy.deploy_branch, deploy.pull_request_id, 'aneshodza.ch', !deploy.has_passed)
+      Deployment.auto_create_or_update(deploy.deploy_branch, deploy.pull_request_id, 'aneshodza.ch',
+                                       !deploy.has_passed, deploy.ci_date.to_s)
     end
 
     assert_equal deploy.reload.url, 'aneshodza.ch'
@@ -25,7 +26,7 @@ class DeploymentTest < ActiveSupport::TestCase
 
     assert_difference 'Deployment.count', 1 do
       Deployment.auto_create_or_update("some branch that doesn't exist", deploy.pull_request_id, deploy.url,
-                                       deploy.has_passed)
+                                       deploy.has_passed, deploy.ci_date.to_s)
     end
 
     assert_equal 2, Deployment.count
