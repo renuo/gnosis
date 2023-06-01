@@ -22,7 +22,8 @@ SimpleCov.minimum_coverage 100
 FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
 FactoryBot.find_definitions
 
-# Dir[Rails.root.join('plugins/gnosis/app/**/*.rb')].each { |f| load f }
+# Load the lib folder
+Dir[Rails.root.join('plugins/gnosis/lib/**/*.rb')].each { |f| load f }
 
 # Load the Redmine helper
 require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")
