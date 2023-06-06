@@ -14,7 +14,7 @@ class PullRequestDeploymentTest < ActiveSupport::TestCase
 
     assert_difference 'PullRequestDeployment.count', 0 do
       PullRequestDeployment.auto_create_or_update(deploy.deploy_branch, deploy.pull_request_id, 'aneshodza.ch',
-                                       !deploy.has_passed, deploy.ci_date.to_s)
+                                                  !deploy.has_passed, deploy.ci_date.to_s)
     end
 
     assert_equal deploy.reload.url, 'aneshodza.ch'
@@ -26,7 +26,7 @@ class PullRequestDeploymentTest < ActiveSupport::TestCase
 
     assert_difference 'PullRequestDeployment.count', 1 do
       PullRequestDeployment.auto_create_or_update("some branch that doesn't exist", deploy.pull_request_id, deploy.url,
-                                       deploy.has_passed, deploy.ci_date.to_s)
+                                                  deploy.has_passed, deploy.ci_date.to_s)
     end
 
     assert_equal 2, PullRequestDeployment.count
