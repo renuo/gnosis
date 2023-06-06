@@ -1,3 +1,8 @@
+### CI Status
+|develop|main|
+|:------:|:---:|
+|[![Build Status](https://renuo.semaphoreci.com/badges/gnosis/branches/develop.svg?style=shields)](https://renuo.semaphoreci.com/projects/gnosis)|[![Build Status](https://renuo.semaphoreci.com/badges/gnosis/branches/main.svg?style=shields)](https://renuo.semaphoreci.com/projects/gnosis)|
+
 # gnosis
 
 Welcome to gnosis!
