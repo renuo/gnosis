@@ -9,9 +9,9 @@ class PullRequestListTest < GnosisSystemTest
     3.times do |_i|
       @prs << FactoryBot.create(:pull_request, issue_id: 1)
     end
-    FactoryBot.create(:deployment, pull_request_id: @prs[0].id)
-    FactoryBot.create(:deployment, pull_request_id: @prs[0].id, deploy_branch: 'develop')
-    FactoryBot.create(:deployment, pull_request_id: @prs[1].id, deploy_branch: 'develop')
+    FactoryBot.create(:pull_request_deployment, pull_request_id: @prs[0].id)
+    FactoryBot.create(:pull_request_deployment, pull_request_id: @prs[0].id, deploy_branch: 'develop')
+    FactoryBot.create(:pull_request_deployment, pull_request_id: @prs[1].id, deploy_branch: 'develop')
     visit 'issues/1'
   end
 
@@ -33,7 +33,7 @@ class PullRequestListTest < GnosisSystemTest
 
   def test_deployments_all_info_listed
     @prs.each do |pr|
-      pr.deployments.each do |deployment|
+      pr.pull_request_deployments.each do |deployment|
         assert page.has_content?(deployment.deploy_branch)
         assert_includes page.find("#deployment-#{deployment.id}")['href'], deployment.url
         assert page.has_content?(deployment.ci_date.strftime('%d.%m.%Y at %I:%M%p UTC'))

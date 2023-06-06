@@ -73,7 +73,7 @@ class WebhooksController < ApplicationController
       pr = PullRequest.find_by(merge_commit_sha: sha)
       next unless pr
 
-      Deployment.auto_create_or_update(branch, pr.id, url, passed, time)
+      PullRequestDeployment.auto_create_or_update(branch, pr.id, url, passed, time)
     end
   end
 

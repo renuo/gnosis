@@ -2,7 +2,7 @@
 
 class PullRequest < GnosisApplicationRecord
   belongs_to :issue
-  has_many :deployments, dependent: :destroy
+  has_many :pull_request_deployments, dependent: :destroy
 
   def self.auto_create_or_update(params)
     state = params[:pull_request][:merged] ? 'merged' : params[:pull_request][:state]
