@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :deployment do
+  factory :pull_request_deployment do
     deploy_branch { 'main' }
     url { 'example.com' }
     has_passed { true }

@@ -26,7 +26,7 @@ class NewSectionHookListener < Redmine::Hook::ViewListener
 
   def get_deployments
     @deployments = @prs.map do |pr|
-      Deployment.where(pull_request_id: pr['id']).to_a
+      PullRequestDeployment.where(pull_request_id: pr['id']).to_a
     end
   end
 
