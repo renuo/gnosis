@@ -8,7 +8,7 @@ unless Rails.env.test?
   ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
 end
 
-if ENV['GITHUB_ACCESS_TOKEN'].blank?
+if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
   raise 'GITHUB_ACCESS_TOKEN is not set'
 elsif ENV['GITHUB_ACCESS_TOKEN'] == 'your_token'
   Rails.logger.warn 'GITHUB_ACCESS_TOKEN is default value'
