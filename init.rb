@@ -3,8 +3,10 @@
 require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
 
-yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
-ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
+unless Rails.env.test?
+  yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
+  ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
+end
 
 if ENV['GITHUB_ACCESS_TOKEN'].blank?
   raise 'GITHUB_ACCESS_TOKEN is not set'
