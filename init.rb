@@ -14,11 +14,7 @@ unless Rails.env.test?
   ENV.merge!(ActiveSupport::HashWithIndifferentAccess.new(yaml_data))
 end
 
-if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
-  raise 'GITHUB_ACCESS_TOKEN is not set'
-elsif ENV['GITHUB_ACCESS_TOKEN'] == 'your_token'
-  Rails.logger.warn 'GITHUB_ACCESS_TOKEN is default value'
-end
+raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
 
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
