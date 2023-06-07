@@ -4,7 +4,13 @@ require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
 
 unless Rails.env.test?
-  yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
+  yaml_data
+  if File.exist?(Rails.root.join('plugins/gnosis/config/application.yml'))
+    yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
+  else
+    Rails.logger.warn 'application.yml not found'
+    yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml.example').read).result)
+  end
   ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
 end
 
