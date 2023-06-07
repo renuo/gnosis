@@ -4,7 +4,7 @@ require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
 
 unless Rails.env.test?
-  yaml_data
+  yaml_data = nil
   if File.exist?(Rails.root.join('plugins/gnosis/config/application.yml'))
     yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
   else
