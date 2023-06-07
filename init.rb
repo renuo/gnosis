@@ -11,7 +11,7 @@ unless Rails.env.test?
     Rails.logger.warn 'application.yml not found'
     yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml.example').read).result)
   end
-  ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
+  ENV.merge!(ActiveSupport::HashWithIndifferentAccess.new(yaml_data))
 end
 
 if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
