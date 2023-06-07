@@ -4,15 +4,16 @@ require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
 
 unless Rails.env.test?
-  yaml_data = YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
-  ENV = ActiveSupport::HashWithIndifferentAccess.new(yaml_data)
+  yaml_data = if File.exist?(Rails.root.join('plugins/gnosis/config/application.yml'))
+                YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
+              else
+                Rails.logger.warn 'application.yml not found'
+                YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.example.yml').read).result)
+              end
+  ENV.merge!(ActiveSupport::HashWithIndifferentAccess.new(yaml_data))
 end
 
-if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
-  raise 'GITHUB_ACCESS_TOKEN is not set'
-elsif ENV['GITHUB_ACCESS_TOKEN'] == 'your_token'
-  Rails.logger.warn 'GITHUB_ACCESS_TOKEN is default value'
-end
+raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
 
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
