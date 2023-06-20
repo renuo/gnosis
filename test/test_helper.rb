@@ -39,15 +39,15 @@ User.create!(
   password: '12345678',
   password_confirmation: '12345678',
   admin: true,
-  firstname: Faker::Name.first_name,
-  lastname: Faker::Name.last_name,
+  firstname: 'firstname',
+  lastname: 'lastname',
   status: Principal::STATUS_ACTIVE
 )
 
-name = Faker::Lorem.word
+name = 'SomeProject'
 Project.create!(name: name, identifier: name.downcase, is_public: false, description: '…', issues: [
-                  Issue.new(subject: Faker::Lorem.word, description: '…', tracker: Tracker.first, author: User.first,
+                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
                             status: IssueStatus.first, priority: IssuePriority.first),
-                  Issue.new(subject: Faker::Lorem.word, description: '…', tracker: Tracker.first, author: User.first,
+                  Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,
                             status: IssueStatus.first, priority: IssuePriority.first)
                 ])
