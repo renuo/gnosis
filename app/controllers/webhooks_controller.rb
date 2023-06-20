@@ -3,11 +3,6 @@
 class WebhooksController < ApplicationController
   protect_from_forgery except: %i[github_webhook_catcher semaphore_webhook_catcher]
 
-  Octokit.configure do |config|
-    config.access_token = ENV.fetch('GITHUB_ACCESS_TOKEN')
-  end
-  CLIENT = Octokit::Client.new
-
   def github_webhook_catcher
     unless verify_signature(request.body.read, request.env['HTTP_X_HUB_SIGNATURE_256'],
                             ENV.fetch('GITHUB_WEBHOOK_SECRET'))

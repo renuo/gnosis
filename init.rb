@@ -12,6 +12,11 @@ elsif ENV['GITHUB_ACCESS_TOKEN'] == 'your_token'
   Rails.logger.warn 'GITHUB_ACCESS_TOKEN is default value'
 end
 
+Octokit.configure do |config|
+  config.access_token = ENV.fetch('GITHUB_ACCESS_TOKEN')
+end
+CLIENT = Octokit::Client.new
+
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
   author 'Anes Hodza'
