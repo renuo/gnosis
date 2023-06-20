@@ -2,26 +2,15 @@
 
 class WebhooksController < ApplicationController
   protect_from_forgery except: %i[github_webhook_catcher semaphore_webhook_catcher]
+  before_action :verify_signature, only: %i[github_webhook_catcher semaphore_webhook_catcher]
 
   def github_webhook_catcher
-    unless verify_signature(request.body.read, request.env['HTTP_X_HUB_SIGNATURE_256'],
-                            ENV.fetch('GITHUB_WEBHOOK_SECRET'))
-      return render json: {status: 403}, status: :forbidden
-    end
-
     github_webhook_handler(params)
-
     render json: {status: :ok}
   end
 
   def semaphore_webhook_catcher
-    unless verify_signature(request.body.read, "sha256=#{request.headers['X-Semaphore-Signature-256']}",
-                            ENV.fetch('SEMAPHORE_WEBHOOK_SECRET'))
-      return render json: {status: 403}, status: :forbidden
-    end
-
     semaphore_webhook_handler(params)
-
     render json: {status: :ok}
   end
 
@@ -49,9 +38,15 @@ class WebhooksController < ApplicationController
     create_deploys_for_pull_requests(sha_between, branch, passed, time)
   end
 
-  def verify_signature(payload_body, recieved_signature, secret)
-    signature = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), secret, payload_body)}"
-    Rack::Utils.secure_compare(signature, recieved_signature)
+  def verify_signature
+    recieved_signature = request.headers['HTTP_X_HUB_SIGNATURE_256'] ||
+                         request.headers['X-Semaphore-Signature-256']
+    signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'),
+                                        ENV.fetch('GITHUB_WEBHOOK_SECRET'),
+                                        request.body.read).to_s
+    return if Rack::Utils.secure_compare(signature, recieved_signature.gsub('sha256=', ''))
+
+    render json: {status: 403}, status: :forbidden
   end
 
   def fetch_commit_history(repo, branch, first_commit, last_commit)
