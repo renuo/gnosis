@@ -15,6 +15,11 @@ end
 
 raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
 
+Octokit.configure do |config|
+  config.access_token = ENV.fetch('GITHUB_ACCESS_TOKEN')
+end
+CLIENT = Octokit::Client.new
+
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
   author 'Anes Hodza'
