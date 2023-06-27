@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class NewSectionHookListener < Redmine::Hook::ViewListener
+class IssueDetailsHookListener < Redmine::Hook::ViewListener
   def view_issues_show_description_bottom(context={})
     @context = context
     setup
