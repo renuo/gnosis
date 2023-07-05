@@ -54,7 +54,7 @@ class WebhooksController < ApplicationController
     first_sha = range.split('...').first
     last_sha = range.split('...').last
 
-    sha_between = fetch_commit_history(repo, branch, first_sha, last_sha)
+    sha_between = fetch_commit_history(repo, first_sha, last_sha)
     create_deploys_for_pull_requests(sha_between, branch, passed, time)
   end
 
@@ -63,13 +63,9 @@ class WebhooksController < ApplicationController
     Rack::Utils.secure_compare(signature, recieved_signature)
   end
 
-  def fetch_commit_history(repo, branch, first_commit, last_commit)
-    commit_sha_list = CLIENT.commits(repo, branch).pluck(:sha)
-
-    first_commit_index = commit_sha_list.index(first_commit)
-    last_commit_index = commit_sha_list.index(last_commit)
-
-    commit_sha_list[last_commit_index..first_commit_index]
+  def fetch_commit_history(repo, first_commit, last_commit)
+    comparison = CLIENT.compare(repo, first_commit, last_commit)
+    comparison.commits.pluck(:sha)
   end
 
   def create_deploys_for_pull_requests(sha_between, branch, passed, time)
