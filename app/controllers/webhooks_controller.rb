@@ -30,6 +30,10 @@ class WebhooksController < ApplicationController
     render json: {status: :ok}
   end
 
+  def check_if_login_required
+    false # No login required as this uses the "verify_signature" for validation
+  end
+
   private
 
   def github_webhook_handler(params)
