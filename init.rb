@@ -4,12 +4,12 @@ require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
 
 def check_env
-  ENV['GITHUB_WEBHOOK_SECRET'].present? &&
-    ENV['GITHUB_ACCESS_TOKEN'].present? &&
+  ENV['GITHUB_WEBHOOK_SECRET'].present? ||
+    ENV['GITHUB_ACCESS_TOKEN'].present? ||
     ENV['SEMAPHORE_WEBHOOK_SECRET'].present?
 end
 
-if !Rails.env.test? || check_env
+if !check_env && !Rails.env.test?
   yaml_data = if Rails.root.join('plugins/gnosis/config/application.yml').exist?
                 YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
               else
