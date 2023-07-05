@@ -6,11 +6,16 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
   def setup
     @controller = WebhooksController.new
 
-    Octokit::Client.any_instance.stubs(:commits).returns([
-                                                           { sha: 'another_hash' },
-                                                           { sha: 'in_between_hash' },
-                                                           { sha: 'one_hash' }
-                                                         ])
+    commit = Struct.new(:sha)
+    comparison_result_struct = Struct.new(:commits)
+
+    comparison_result = comparison_result_struct.new([
+                                                       commit.new('another_hash'),
+                                                       commit.new('in_between_hash'),
+                                                       commit.new('one_hash')
+                                                     ])
+
+    Octokit::Client.any_instance.stubs(:compare).returns(comparison_result)
 
     @github_webhook_hash = {
       pull_request: {
