@@ -41,4 +41,21 @@ class PullRequestListTest < GnosisSystemTest
       end
     end
   end
+
+  # def test_as_non_admin
+  #   client_role = Role.create!(name: 'Client')
+  #
+  #   client = User.create!(
+  #     login: 'client',
+  #     mail: 'client@example.com',
+  #     password: '12345678',
+  #     password_confirmation: '12345678',
+  #     admin: false,
+  #     firstname: 'Client',
+  #     lastname: 'User',
+  #     status: Principal::STATUS_ACTIVE
+  #   )
+  #
+  #   # TODO: Add test
+  # end
 end

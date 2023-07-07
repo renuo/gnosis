@@ -28,4 +28,8 @@ Redmine::Plugin.register :gnosis do
   version '1.0.0'
   url 'https://github.com/aneshodza/gnosis/'
   author_url 'https://www.aneshodza.ch/'
+
+  project_module :gnosis do
+    permission :view_list, {}
+  end
 end
