@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../test_helper'
 
 class NumberExtractorTest < Minitest::Test
@@ -9,7 +11,8 @@ class NumberExtractorTest < Minitest::Test
     numbers = extract_number_from_ref(
       head: {
         ref: 'feature/1-some-feature'
-      })
+      }
+    )
     assert_equal '1', numbers
   end
 
@@ -17,7 +20,8 @@ class NumberExtractorTest < Minitest::Test
     numbers = extract_number_from_ref(
       head: {
         ref: 'feature/some-feature'
-      })
+      }
+    )
     assert_nil numbers
   end
 
@@ -25,14 +29,15 @@ class NumberExtractorTest < Minitest::Test
     numbers = extract_number_from_ref(
       head: {
         ref: 'feature/1/2/3'
-      })
+      }
+    )
     assert_equal '1', numbers
   end
 
-
   def test_ticket_is_matched_in_body
     numbers = extract_number_from_ref(
-      body: 'here is some\n\nTICKET-1stuff')
+      body: 'here is some\n\nTICKET-1stuff'
+    )
     assert_equal '1', numbers
   end
 
@@ -41,7 +46,8 @@ class NumberExtractorTest < Minitest::Test
       head: {
         ref: 'feature/1-some-feature'
       },
-      body: 'here is some\n\nTICKET-2stuff')
+      body: 'here is some\n\nTICKET-2stuff'
+    )
     assert_equal '1', numbers
   end
 end
