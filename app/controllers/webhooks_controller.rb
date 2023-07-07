@@ -37,11 +37,11 @@ class WebhooksController < ApplicationController
   private
 
   def github_webhook_handler(params)
-    numbers = params[:pull_request][:head][:ref].match(%r{/(\d+)}) || []
+    number = NumberExtractor.call(params)
 
-    return unless numbers.length.positive? && Issue.exists?(id: numbers[1])
+    return unless number.present? && Issue.exists?(id: number)
 
-    PullRequest.auto_create_or_update(params.merge(issue_id: numbers[1]))
+    PullRequest.auto_create_or_update(params.merge(issue_id: number))
   end
 
   def semaphore_webhook_handler(params)
