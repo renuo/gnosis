@@ -10,6 +10,8 @@ class NumberExtractor
     DIG_FIND_DATA.lazy.map do |data|
       match = params.dig(*data[:keys])&.match(data[:match_regex])
       match[1] if match
-    end.compact.first
+      # rubocop:disable Style/CollectionCompact
+    end.reject(&:nil?).first
+    # rubocop:enable Style/CollectionCompact
   end
 end
