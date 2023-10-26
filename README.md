@@ -17,7 +17,7 @@ Have a look at the [`NumberExtractor`](https://github.com/renuo/gnosis/blob/main
 
 The plugin provides a webhook endpoint for GitHub to call on PR updates.
 Follow these steps to configure it:
-1. Go to <https://github.com/your_org/your_repo/settings/hooks>
+1. Visit `https://github.com/ORG/REPO/settings/hooks`
 2. Click on "Add Webhook"
 3. Enter "Payload URL" to be Redmine URL + `/github_webhook`
 4. The secret is up for you to decide. It's important that this string is complex and secure.
@@ -34,7 +34,7 @@ You should now be good to go!
 
 The plugin also provides a webhook to be called by SemaphoreCI.
 Configure it like this:
-1. Go to <https://your_org.semaphoreci.com/notifications>
+1. Visit `https://ORG.semaphoreci.com/notifications`
 2. Click on "New Notification"
 3. Attributes like "Name of the notification" can be chosen freely. What you need to setup is: Listing your project under
 "in projects", having `/.*-deploy\.yml/` under Pipelines (this just tells the notification to send data every time a
@@ -49,7 +49,7 @@ This should now also work just fine!
 
 The plugin needs to query the GitHub API every now and then to match-up pull requests with deployments.
 For that you need to set the `GITHUB_ACCESS_TOKEN` env variable. For example you can configure it like this:
-1. Go to <https://github.com/settings/tokens>
+1. Visit <https://github.com/settings/tokens>
 2. Click on "Generate new token"
 3. Click the "(classic)" option
 4. Check only the "repo" box.
