@@ -28,7 +28,7 @@ You should now be good to go!
 
 ## SemaphoreCI deployment tracking
 
-**Important:** This is optional. You can simply use pull request tracking ans skip this step.
+**Important:** This is optional. You can simply use pull request tracking and skip this step.
 
 ### Configure SemaphoreCI
 
