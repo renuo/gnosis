@@ -7,6 +7,9 @@ class PullRequest < GnosisApplicationRecord
   def self.auto_create_or_update(params)
     state = params[:pull_request][:merged] ? 'merged' : params[:pull_request][:state]
     state = 'draft' if params[:pull_request][:draft]
+
+    return if Issue.find_by(id: params[:issue_id]).nil?
+
     pr = PullRequest.find_or_initialize_by(url: params[:pull_request][:html_url])
     pr.update!(state: state, url: params[:pull_request][:html_url],
                title: params[:pull_request][:title], source_branch: params[:pull_request][:head][:ref],
