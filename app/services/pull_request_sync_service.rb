@@ -8,7 +8,7 @@ class PullRequestSyncService
       fetch_repository_pull_requests(repository).each do |pull_request|
         ticket_number = NumberExtractor.call(pull_request: pull_request)
 
-        continue unless ticket_number.present?
+        continue if ticket_number.blank?
 
         Rails.logger.info "Processing pull request #{pull_request[:html_url]} for ticket #{ticket_number}"
 
@@ -32,6 +32,6 @@ class PullRequestSyncService
   end
 
   def init_client
-    @client = Octokit::Client.new(access_token: ENV.fetch( 'GITHUB_ACCESS_TOKEN' ))
+    @client = Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN'))
   end
 end

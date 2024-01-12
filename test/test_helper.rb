@@ -1,4 +1,4 @@
-# frozen_string_literal: truetest_heltest_he
+# frozen_string_literal: true
 
 require 'simplecov'
 require 'factory_bot_rails'
@@ -30,8 +30,6 @@ SimpleCov.minimum_coverage 100
 FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
 FactoryBot.find_definitions
 
-require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")
-
 # Load the lib folder
 # Dir[Rails.root.join('plugins/gnosis/lib/**/*.rb')].each { |f| load f }
 # the same as above but with File expand path:
@@ -60,8 +58,8 @@ User.create(
 
 name = 'SomeProject'
 Project.create(name: name, identifier: name.downcase, is_public: false, description: '…', issues: [
-                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
-                            status: IssueStatus.first, priority: IssuePriority.first),
-                  Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,
-                            status: IssueStatus.first, priority: IssuePriority.first)
-                ])
+                 Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
+                           status: IssueStatus.first, priority: IssuePriority.first),
+                 Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,
+                           status: IssueStatus.first, priority: IssuePriority.first)
+               ])
