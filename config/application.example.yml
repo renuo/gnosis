@@ -1,3 +1,4 @@
+GITHUB_ORGANIZATION_NAME: 'your_organization_name'
 GITHUB_WEBHOOK_SECRET: 'your_secret'
 GITHUB_ACCESS_TOKEN: 'your_token'
 SEMAPHORE_WEBHOOK_SECRET: 'your_secret'
