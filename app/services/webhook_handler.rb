@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WebhookHandler
   class << self
     Octokit.configure do |config|
