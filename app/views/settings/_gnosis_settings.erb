@@ -1,0 +1,14 @@
+<table>
+  <tbody>
+  <tr>
+    <th>Sync pull requests for</th>
+    <td>
+      <input type="text" id="settings_notification_default"
+             value="<%= ENV.fetch('GITHUB_ORGANIZATION_NAME') %>"
+             disabled
+             name="settings[github_access_token]" >
+      <%= link_to 'Sync (takes a very long time)', {controller: 'sync', action: 'sync_pull_requests'} %>
+    </td>
+  </tr>
+  </tbody>
+</table>
