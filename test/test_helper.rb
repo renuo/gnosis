@@ -18,7 +18,7 @@ SimpleCov.start do
   # end
 
   add_filter do |source_file|
-    source_file.filename.exclude?('plugins/redmine_gnosis') || !source_file.filename.end_with?('.rb')
+    source_file.filename.exclude?('plugins/gnosis') || !source_file.filename.end_with?('.rb')
   end
 
   track_files 'app/**/*.rb'
