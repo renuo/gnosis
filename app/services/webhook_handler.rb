@@ -1,5 +1,10 @@
 class WebhookHandler
   class << self
+    Octokit.configure do |config|
+      config.access_token = ENV.fetch('GITHUB_ACCESS_TOKEN', nil)
+    end
+    CLIENT = Octokit::Client.new
+
     def handle_github(params)
       number = NumberExtractor.call(params)
 
@@ -15,16 +20,19 @@ class WebhookHandler
       passed = params[:pipeline][:result] == 'passed'
       time = params[:pipeline][:done_at]
 
+      org = params[:organization][:name]
+      workflow_id = params[:workflow][:id]
+
       first_sha = range.split('...').first
       last_sha = range.split('...').last
 
       sha_between = fetch_commit_history(repo, first_sha, last_sha)
-      create_deploys_for_pull_requests(sha_between, branch, passed, time)
+      create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, passed, time)
     end
 
     private
 
-    def create_deploys_for_pull_requests(sha_between, branch, passed, time)
+    def create_deploys_for_pull_requests(url, sha_between, branch, passed, time)
       sha_between.each do |sha|
         pr = PullRequest.find_by(merge_commit_sha: sha)
         next unless pr
@@ -38,8 +46,8 @@ class WebhookHandler
       comparison.commits.pluck(:sha)
     end
 
-    def url
-      "https://#{params[:organization][:name]}.semaphoreci.com/workflows/#{params[:workflow][:id]}/"
+    def semaphore_url(org, workflow_id)
+      "https://#{org}.semaphoreci.com/workflows/#{workflow_id}/"
     end
   end
 end
