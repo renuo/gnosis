@@ -10,7 +10,7 @@ class PullRequestSyncServiceTest < ActiveSupport::TestCase
     ]
 
     @github_pull_requests = [
-       {
+      {
         state: 'closed',
         html_url: 'https://github.com/aneshodza/test-repo/pull/17',
         title: 'Create something',
