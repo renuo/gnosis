@@ -33,8 +33,8 @@ class PullRequestSyncServiceTest < ActiveSupport::TestCase
 
   def test_import_pull_requests
     instance = PullRequestSyncService.new
-      assert_difference 'PullRequest.count', 1 do
-        instance.call
+    assert_difference 'PullRequest.count', 1 do
+      instance.call
     end
   end
 end
