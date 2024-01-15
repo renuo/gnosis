@@ -19,7 +19,7 @@ class PullRequestSyncService
   end
 
   def fetch_repositories
-    @client.org_repositories(ENV['GITHUB_ORGANIZATION_NAME'], type: :private)
+    @client.org_repositories(ENV.fetch('GITHUB_ORGANIZATION_NAME', nil), type: :private)
   end
 
   def fetch_repository_pull_requests(repository)
@@ -27,7 +27,7 @@ class PullRequestSyncService
   end
 
   def init_client
-    @client = Octokit::Client.new(access_token: ENV['GITHUB_ACCESS_TOKEN'])
+    @client = Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN', nil))
     @client.auto_paginate = true
   end
 end
