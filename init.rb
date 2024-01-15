@@ -9,6 +9,7 @@ def check_env
     ENV['SEMAPHORE_WEBHOOK_SECRET'].present?
 end
 
+# :nocov:
 if !check_env && !Rails.env.test?
   yaml_data = if Rails.root.join('plugins/gnosis/config/application.yml').exist?
                 YAML.safe_load(ERB.new(Rails.root.join('plugins/gnosis/config/application.yml').read).result)
@@ -18,6 +19,7 @@ if !check_env && !Rails.env.test?
               end
   ENV.merge!(ActiveSupport::HashWithIndifferentAccess.new(yaml_data))
 end
+# :nocov:
 
 raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
 
