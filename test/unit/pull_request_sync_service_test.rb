@@ -33,10 +33,8 @@ class PullRequestSyncServiceTest < ActiveSupport::TestCase
 
   def test_import_pull_requests
     instance = PullRequestSyncService.new
-    instance.stub(:fetch_repositories, [{ name: 'renuo/legacy-import-test' }]) do
-      assert_equal 0, PullRequest.count
-      instance.call
-      assert_equal 1, PullRequest.count
+      assert_difference 'PullRequest.count', 1 do
+        instance.call
     end
   end
 end
