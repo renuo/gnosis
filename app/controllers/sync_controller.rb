@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SyncController < ApplicationController
+class SyncController < ProtectedController
   def sync_pull_requests
     count_before = PullRequest.count
     PullRequestSyncService.new.call

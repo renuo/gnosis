@@ -34,6 +34,8 @@ Redmine::Plugin.register :gnosis do
   settings default: { }, partial: 'settings/gnosis_settings'
 
   project_module :gnosis do
-    permission :view_list, {}
+    permission :sync_pull_requests, {
+      sync: %i[sync_pull_requests]
+    }, require: :loggedin
   end
 end
