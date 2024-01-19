@@ -6,7 +6,8 @@ require_relative 'lib/issue_details_hook_listener'
 def check_env
   ENV['GITHUB_WEBHOOK_SECRET'].present? ||
     ENV['GITHUB_ACCESS_TOKEN'].present? ||
-    ENV['SEMAPHORE_WEBHOOK_SECRET'].present?
+    ENV['SEMAPHORE_WEBHOOK_SECRET'].present? ||
+    ENV['GITHUB_ORGANIZATION_NAME'].present?
 end
 
 # :nocov:
