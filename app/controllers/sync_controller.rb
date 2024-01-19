@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-class SyncController < ApplicationController
-  before_action :require_admin
-
+class SyncController < ProtectedController
   def sync_pull_requests
     SyncJob.perform_later
     render plain: 'Pull request syncing started. This may take a while.'

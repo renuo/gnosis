@@ -33,4 +33,14 @@ Redmine::Plugin.register :gnosis do
   author_url 'https://www.aneshodza.ch/'
 
   settings default: { }, partial: 'settings/gnosis_settings'
+
+  project_module :gnosis do
+    permission :view_list, {}
+  end
+
+  project_module :gnosis do
+    permission :sync_pull_requests, {
+      sync: %i[sync_pull_requests]
+    }, require: :loggedin
+  end
 end
