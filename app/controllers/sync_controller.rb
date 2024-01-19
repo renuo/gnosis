@@ -2,7 +2,7 @@
 
 class SyncController < ApplicationController
   def sync_pull_requests
-    SyncJob.perform
+    SyncJob.perform_later
     render plain: "Pull request syncing started. This may take a while."
   rescue StandardError => e
     Rails.logger.error(e)
