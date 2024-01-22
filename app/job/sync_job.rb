@@ -10,6 +10,6 @@ class SyncJob < ApplicationJob
   private
 
   def info(msg)
-    Rails.logger.info('[PullRequestSyncJob] --- #{msg}')
+    Rails.logger.info("[PullRequestSyncJob] --- #{msg}")
   end
 end
