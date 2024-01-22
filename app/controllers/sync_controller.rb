@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class SyncController < ProtectedController
+class SyncController < ApplicationController
+  before_action :require_admin
+
   def sync_pull_requests
     count_before = PullRequest.count
     PullRequestSyncService.new.call
