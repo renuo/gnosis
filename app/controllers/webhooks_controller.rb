@@ -9,7 +9,7 @@ class WebhooksController < ApplicationController
       return render json: {status: 403}, status: :forbidden
     end
 
-    WebhookHandler.handle_github(params)
+    WebhookHandler.new.handle_github(params)
 
     render json: {status: :ok}
   end
@@ -20,7 +20,7 @@ class WebhooksController < ApplicationController
       return render json: {status: 403}, status: :forbidden
     end
 
-    WebhookHandler.handle_semaphore(params)
+    WebhookHandler.new.handle_semaphore(params)
 
     render json: {status: :ok}
   end
