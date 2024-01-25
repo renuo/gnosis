@@ -8,8 +8,6 @@ class PullRequest < GnosisApplicationRecord
     state = webhook_params[:pull_request][:merged] ? 'merged' : webhook_params[:pull_request][:state]
     state = 'draft' if webhook_params[:pull_request][:draft]
 
-    return if Issue.find_by(id: webhook_params[:issue_id]).nil?
-
     pr = PullRequest.find_or_initialize_by(url: webhook_params[:pull_request][:html_url])
     pr.update!(state: state,
                url: webhook_params[:pull_request][:html_url],
