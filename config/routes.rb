@@ -6,3 +6,4 @@ resources :example, only: [:index]
 
 post 'github_webhook', to: 'webhooks#github_webhook_catcher'
 post 'semaphore_webhook', to: 'webhooks#semaphore_webhook_catcher'
+get 'sync_pull_requests', to: 'sync#sync_pull_requests'
