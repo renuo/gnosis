@@ -8,7 +8,7 @@ class CreatePullRequests < ActiveRecord::Migration[6.1]
       t.string :target_branch
       t.string :merge_commit_sha
       t.boolean :was_merged, default: false, null: false
-      t.references :issue, null: false, foreign_key: true
+      t.references :issue, null: false
 
       t.timestamps
     end

@@ -1,0 +1,41 @@
+<table>
+  <tbody>
+  <tr>
+    <th>Sync pull requests for</th>
+    <td>
+      <input type="text" id="settings_notification_default"
+             value="<%= ENV.fetch('GITHUB_ORGANIZATION_NAME') %>"
+             disabled
+             name="settings[github_access_token]" >
+      <label>
+      </label>
+      <button id="sync-button" data-url="<%= sync_pull_requests_path %>">Sync</button>
+      <span>(takes a very long time!)</span>
+
+      <script>
+          document.querySelector('#sync-button').addEventListener('click', function () {
+              this.disabled = true;
+              this.innerText = 'Syncing...';
+
+              const handleError = (error) => {
+                  this.innerText = 'Sync failed!';
+                  console.error(error);
+              }
+
+              const handleResponse = (response) => {
+                  if (response.ok) {
+                      this.innerText = 'Synced!';
+                  } else {
+                      handleError()
+                  }
+              }
+
+              fetch(this.dataset.url, {method: 'GET'})
+                .then(handleResponse)
+                .catch(handleError)
+          })
+      </script>
+    </td>
+  </tr>
+  </tbody>
+</table>
