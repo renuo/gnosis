@@ -57,8 +57,8 @@ User.create(
 )
 
 Project.create(name: 'SomeProject', identifier: 'someproject', is_public: false, description: '…', issues: [
-                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
-                            status: IssueStatus.first, priority: IssuePriority.first),
-                  Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,
-                            status: IssueStatus.first, priority: IssuePriority.first)
-                ])
+                 Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
+                           status: IssueStatus.first, priority: IssuePriority.first),
+                 Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,
+                           status: IssueStatus.first, priority: IssuePriority.first)
+               ])

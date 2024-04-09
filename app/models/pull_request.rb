@@ -13,8 +13,8 @@ class PullRequest < GnosisApplicationRecord
     pr = PullRequest.find_or_initialize_by(url: webhook_params[:pull_request][:html_url])
     pr.update!(state: state,
                url: webhook_params[:pull_request][:html_url],
-               title: webhook_params[:pull_request][:title], source_branch:
-               webhook_params[:pull_request][:head][:ref],
+               title: webhook_params[:pull_request][:title],
+               source_branch: webhook_params[:pull_request][:head][:ref],
                target_branch: webhook_params[:pull_request][:base][:ref],
                was_merged: webhook_params[:pull_request][:merged],
                merge_commit_sha: webhook_params[:pull_request][:merge_commit_sha],
