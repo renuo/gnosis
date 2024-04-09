@@ -2,6 +2,7 @@
 
 require 'simplecov'
 require 'factory_bot_rails'
+require 'byebug'
 
 ENV['GOOGLE_CHROME_OPTS_ARGS'] = 'headless,disable-gpu,no-sandbox,disable-dev-shm-usage'
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
@@ -55,8 +56,7 @@ User.create(
   status: Principal::STATUS_ACTIVE
 )
 
-name = 'SomeProject'
-Project.create(name: name, identifier: name.downcase, is_public: false, description: '…', issues: [
+Project.create(name: 'SomeProject', identifier: 'someproject', is_public: false, description: '…', issues: [
                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
                            status: IssueStatus.first, priority: IssuePriority.first),
                  Issue.new(subject: 'some other subject', description: '…', tracker: Tracker.first, author: User.first,

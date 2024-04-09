@@ -11,7 +11,7 @@ class PullRequestSyncService
         pull_request_hash = pull_request.to_h
         pull_request_hash[:merged] = pull_request[:merged_at].present?
 
-        WebhookHandler.handle_github(pull_request: pull_request_hash)
+        WebhookHandler.new.handle_github(pull_request: pull_request_hash)
       end
     end
   end
