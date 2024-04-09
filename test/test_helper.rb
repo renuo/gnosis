@@ -2,6 +2,7 @@
 
 require 'simplecov'
 require 'factory_bot_rails'
+require 'byebug'
 
 ENV['GOOGLE_CHROME_OPTS_ARGS'] = 'headless,disable-gpu,no-sandbox,disable-dev-shm-usage'
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
