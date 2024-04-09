@@ -7,7 +7,6 @@
              value="<%= ENV.fetch('GITHUB_ORGANIZATION_NAME') %>"
              disabled
              name="settings[github_access_token]" >
-      <%#= link_to 'Sync (takes a very long time)', {controller: 'sync', action: 'sync_pull_requests'}, id: 'sync-link' %>
       <label>
       </label>
       <button id="sync-button" data-url="<%= sync_pull_requests_path %>">Sync</button>

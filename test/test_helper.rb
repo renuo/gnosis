@@ -10,13 +10,6 @@ ENV['SEMAPHORE_WEBHOOK_SECRET'] = 'test'
 
 SimpleCov.coverage_dir('plugins/gnosis/coverage')
 SimpleCov.start do
-  # https://stackoverflow.com/questions/74363810/simplecov-filter-all-controllers-except-certain-ones
-  # add_group "lib", "plugins/gnosis/lib"
-  # add_group "app", "plugins/gnosis/app"
-  # add_filter do |source_file|
-  #   source_file.filename =~ %r{plugins/gnosis/app/controllers/}
-  # end
-
   add_filter do |source_file|
     source_file.filename.exclude?('plugins/gnosis') || !source_file.filename.end_with?('.rb')
   end
@@ -29,13 +22,6 @@ SimpleCov.minimum_coverage 100
 
 FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
 FactoryBot.find_definitions
-
-# Load the lib folder
-# Dir[Rails.root.join('plugins/gnosis/lib/**/*.rb')].each { |f| load f }
-# the same as above but with File expand path:
-# File.expand_path('lib', __dir__).tap do |lib|
-#   Dir["#{lib}/**/*.rb"].each { |f| load f }
-# end
 
 # Load the Redmine helper
 require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")
