@@ -2,8 +2,6 @@
 
 class PullRequestSyncService
   def call
-    init_client
-
     fetch_repositories.each do |repository|
       fetch_repository_pull_requests(repository).each do |pull_request|
         Rails.logger.info "Processing pull request #{pull_request[:html_url]}"
@@ -17,15 +15,14 @@ class PullRequestSyncService
   end
 
   def fetch_repositories
-    @client.org_repositories(ENV.fetch('GITHUB_ORGANIZATION_NAME'), type: :private)
+    client.org_repositories(ENV.fetch('GITHUB_ORGANIZATION_NAME'), type: :private)
   end
 
   def fetch_repository_pull_requests(repository)
-    @client.pull_requests(repository[:full_name], state: :all)
+    client.pull_requests(repository[:full_name], state: :all)
   end
 
-  def init_client
-    @client = Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN'))
-    @client.auto_paginate = true
+  def client
+    @client ||= Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN'), auto_paginate: true)
   end
 end
