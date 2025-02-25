@@ -5,7 +5,7 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../test/application_sy
 
 class GnosisSystemTest < ApplicationSystemTestCase
   def login
-    User.where(login: 'admin').each do |user|
+    User.where(login: 'admin').find_each do |user|
       user.update!(password: '12345678')
     end
 
