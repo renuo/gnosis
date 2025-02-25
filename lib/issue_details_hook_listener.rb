@@ -2,7 +2,6 @@
 
 class IssueDetailsHookListener < Redmine::Hook::ViewListener
   def view_issues_show_description_bottom(context={})
-
     @context = context
     setup
     <<-HTML
