@@ -33,11 +33,9 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
   end
 
   def set_deployment_strings
-    @deployments_strings = []
-    @deployments.each do |deployment_list|
-      formatted_deployment_list = []
-      deployment_list.each do |deployment|
-        formatted_deployment_list << <<-LISTOBJECT
+    @deployments_strings = @deployments.map do |deployment_list|
+      deployment_list.map do |deployment|
+        <<-LISTOBJECT
           <li>
             <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>
               on "#{deployment['deploy_branch']}"
@@ -47,7 +45,6 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
           </li>
         LISTOBJECT
       end
-      @deployments_strings << formatted_deployment_list
     end
   end
 
