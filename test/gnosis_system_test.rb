@@ -5,6 +5,8 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../test/application_sy
 
 class GnosisSystemTest < ApplicationSystemTestCase
   def login
+    User.where(login: 'admin').update!(password: '12345678')
+
     visit '/login'
     fill_in 'username', with: 'admin'
     fill_in 'password', with: '12345678'
