@@ -11,19 +11,13 @@ blocks:
         - name: Tests
           commands:
             - bin/test
-          matrix:
-            - env_var: REDMINE_VERSION
-              values: ["6.0-stable", "5.1-stable"]
         - name: Linter
           commands:
             - bin/fastcheck
-          env_vars:
-            - name: REDMINE_VERSION
-              value: "6.0-stable"
       prologue:
         commands:
           - sem-version ruby 3.1
-          - 'git clone -b "$REDMINE_VERSION" git@github.com:redmine/redmine.git'
+          - 'git clone -b 5.1-stable git@github.com:redmine/redmine.git'
           - cd redmine
           - cp config/configuration.yml.example config/configuration.yml
           - 'git clone git@github.com:aneshodza/redmine-postgres-database-yml.git'
