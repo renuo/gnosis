@@ -2,7 +2,6 @@
 
 class IssueDetailsHookListener < Redmine::Hook::ViewListener
   def view_issues_show_description_bottom(context={})
-    return '' unless User.current.allowed_to?(:view_list, nil, :global => true)
 
     @context = context
     setup

@@ -6,6 +6,8 @@ require 'byebug'
 
 ENV['GOOGLE_CHROME_OPTS_ARGS'] = 'headless,disable-gpu,no-sandbox,disable-dev-shm-usage'
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
+ENV['GITHUB_ACCESS_TOKEN'] = 'test'
+ENV['GITHUB_ORGANIZATION_NAME'] = 'test'
 ENV['SEMAPHORE_WEBHOOK_SECRET'] = 'test'
 
 SimpleCov.coverage_dir('plugins/gnosis/coverage')
