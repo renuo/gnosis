@@ -6,8 +6,9 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../test/application_sy
 class GnosisSystemTest < ApplicationSystemTestCase
   def login
     visit '/login'
-    fill_in 'username', with: 'gnosis_admin'
-    fill_in 'password', with: 'gnosis12345678'
+    fill_in 'username', with: 'admin'
+    fill_in 'password', with: 'admin'
     click_button 'Login'
+    assert !page.has_content?('Invalid user or password')
   end
 end

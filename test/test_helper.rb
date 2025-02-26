@@ -33,17 +33,6 @@ IssueStatus.create(name: 'To start', default_done_ratio: 0)
 Tracker.create(name: 'Feature', default_status: IssueStatus.first)
 IssuePriority.create(name: 'Normal', is_default: true)
 
-User.create!(
-  login: 'gnosis_admin',
-  mail: 'gnosis_admin@example.com',
-  password: 'gnosis12345678',
-  password_confirmation: 'gnosis12345678',
-  admin: true,
-  firstname: 'firstname',
-  lastname: 'lastname',
-  status: Principal::STATUS_ACTIVE
-)
-
 Project.create(name: 'SomeProject', identifier: 'someproject', is_public: false, description: '…', issues: [
                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
                            status: IssueStatus.first, priority: IssuePriority.first),
