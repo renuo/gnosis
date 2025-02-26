@@ -7,7 +7,8 @@ class GnosisSystemTest < ApplicationSystemTestCase
   def login
     visit '/login'
     fill_in 'username', with: 'admin'
-    fill_in 'password', with: '12345678'
+    fill_in 'password', with: 'admin'
     click_button 'Login'
+    assert_not page.has_content?('Invalid user or password')
   end
 end

@@ -6,6 +6,8 @@ require 'byebug'
 
 ENV['GOOGLE_CHROME_OPTS_ARGS'] = 'headless,disable-gpu,no-sandbox,disable-dev-shm-usage'
 ENV['GITHUB_WEBHOOK_SECRET'] = 'test'
+ENV['GITHUB_ACCESS_TOKEN'] = 'test'
+ENV['GITHUB_ORGANIZATION_NAME'] = 'test'
 ENV['SEMAPHORE_WEBHOOK_SECRET'] = 'test'
 
 SimpleCov.coverage_dir('plugins/gnosis/coverage')
@@ -30,17 +32,6 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")
 IssueStatus.create(name: 'To start', default_done_ratio: 0)
 Tracker.create(name: 'Feature', default_status: IssueStatus.first)
 IssuePriority.create(name: 'Normal', is_default: true)
-
-User.create(
-  login: 'admin',
-  mail: 'admin@example.com',
-  password: '12345678',
-  password_confirmation: '12345678',
-  admin: true,
-  firstname: 'firstname',
-  lastname: 'lastname',
-  status: Principal::STATUS_ACTIVE
-)
 
 Project.create(name: 'SomeProject', identifier: 'someproject', is_public: false, description: '…', issues: [
                  Issue.new(subject: 'some subject', description: '…', tracker: Tracker.first, author: User.first,
