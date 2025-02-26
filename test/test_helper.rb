@@ -33,11 +33,11 @@ IssueStatus.create(name: 'To start', default_done_ratio: 0)
 Tracker.create(name: 'Feature', default_status: IssueStatus.first)
 IssuePriority.create(name: 'Normal', is_default: true)
 
-User.create(
-  login: 'admin',
-  mail: 'admin@example.com',
-  password: '12345678',
-  password_confirmation: '12345678',
+User.create!(
+  login: 'gnosis_admin',
+  mail: 'gnosis_admin@example.com',
+  password: 'gnosis12345678',
+  password_confirmation: 'gnosis12345678',
   admin: true,
   firstname: 'firstname',
   lastname: 'lastname',
