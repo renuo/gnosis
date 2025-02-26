@@ -9,6 +9,6 @@ class GnosisSystemTest < ApplicationSystemTestCase
     fill_in 'username', with: 'admin'
     fill_in 'password', with: 'admin'
     click_button 'Login'
-    assert !page.has_content?('Invalid user or password')
+    assert_not page.has_content?('Invalid user or password')
   end
 end
