@@ -23,11 +23,12 @@ class WebhookHandler
     org = params[:organization][:name]
     workflow_id = params[:workflow][:id]
 
-    first_sha = range.split('...').first
-    last_sha = range.split('...').last
+    first_sha, last_sha = range.split('...')
 
     sha_between = fetch_commit_history(repo, first_sha, last_sha)
     create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, passed, time)
+  rescue Octokit::NotFound
+    nil
   end
 
   private

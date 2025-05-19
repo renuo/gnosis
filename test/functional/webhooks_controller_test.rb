@@ -127,6 +127,14 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
     assert @response.status == 403
   end
 
+  def test_deploy_with_nonexistent_commit
+    Octokit::Client.any_instance.stubs(:compare).raises(Octokit::NotFound)
+    @request.headers['X-Semaphore-Signature-256'] = 'f88bf226e3fd7cbf28de748adfdd65a4372184d8daac01e2bd2aab1537f9981d'
+    assert_difference('PullRequestDeployment.count', 0) do
+      post :semaphore_webhook_catcher, params: @semaphore_webhook_hash, as: :json
+    end
+  end
+
   def test_deploy_no_pr
     PullRequest.destroy_all
     @request.headers['X-Semaphore-Signature-256'] = 'f88bf226e3fd7cbf28de748adfdd65a4372184d8daac01e2bd2aab1537f9981d'
