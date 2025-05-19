@@ -4,7 +4,7 @@ white='\033[1;37m'
 red='\033[0;31m'
 green='\033[0;32m'
 
-rake redmine:plugins:test NAME=gnosis
+bundle exec rake redmine:plugins:test NAME=gnosis
 
 if [[ $? -eq 0 ]]; then
   echo -e "${green}----------------------------------------"
