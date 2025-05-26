@@ -6,7 +6,7 @@ class PullRequest < GnosisApplicationRecord
 
   def self.auto_create_or_update(webhook_params)
     state = webhook_params[:pull_request][:merged] ? 'merged' : webhook_params[:pull_request][:state]
-    state = 'draft' if webhook_params[:pull_request][:draft]
+    state = 'draft' if state == 'open' && webhook_params[:pull_request][:draft]
 
     return if Issue.find_by(id: webhook_params[:issue_id]).nil?
 
