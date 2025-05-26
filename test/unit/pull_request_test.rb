@@ -42,4 +42,16 @@ class PullRequestTest < ActiveSupport::TestCase
     pr = PullRequest.last
     assert_equal 'open', pr.state
   end
+
+  def test_closed_draft_pull_request_state
+    webhook_hash = @github_webhook_hash.dup
+    webhook_hash[:pull_request][:state] = 'closed'
+    webhook_hash[:pull_request][:draft] = true
+    webhook_hash[:pull_request][:merged] = false
+
+    PullRequest.auto_create_or_update(webhook_hash)
+
+    pr = PullRequest.find_by(url: webhook_hash[:pull_request][:html_url])
+    assert_equal 'closed', pr.state
+  end
 end
