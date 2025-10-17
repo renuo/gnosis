@@ -54,6 +54,8 @@ For that you need to set the `GITHUB_ACCESS_TOKEN` env variable. For example you
 3. Click the "(classic)" option
 4. Check only the "repo" box.
 
+The plugin validates the token on startup. If the token is invalid or expired, the plugin will fail to load with an error message.
+
 If you make a deployment, all should correctly work now.
 
 ## Development
