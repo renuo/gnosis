@@ -22,7 +22,7 @@ blocks:
               value: "6.0-stable"
       prologue:
         commands:
-          - sem-version ruby 3.1
+          - sem-version ruby 3.3
           - 'git clone -b "$REDMINE_VERSION" git@github.com:redmine/redmine.git'
           - cd redmine
           - cp config/configuration.yml.example config/configuration.yml
