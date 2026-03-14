@@ -13,7 +13,7 @@ blocks:
             - bin/test
           matrix:
             - env_var: REDMINE_VERSION
-              values: ["6.0-stable", "5.1-stable"]
+              values: ["master", "6.0-stable", "5.1-stable"]
         - name: Linter
           commands:
             - bin/fastcheck
