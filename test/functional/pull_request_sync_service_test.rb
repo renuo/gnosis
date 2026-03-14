@@ -31,8 +31,8 @@ class PullRequestSyncServiceTest < ActiveSupport::TestCase
   end
 
   def test_import_pull_requests
-    instance = PullRequestSyncService.new
-    assert_difference 'PullRequest.count', 1 do
+    instance = Gnosis::PullRequestSyncService.new
+    assert_difference 'Gnosis::PullRequest.count', 1 do
       instance.call
     end
   end

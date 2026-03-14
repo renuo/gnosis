@@ -2,8 +2,11 @@
 
 # Plugin's routes
 # See: http://guides.rubyonrails.org/routing.html
-resources :example, only: [:index]
 
-post 'github_webhook', to: 'webhooks#github_webhook_catcher'
-post 'semaphore_webhook', to: 'webhooks#semaphore_webhook_catcher'
-get 'sync_pull_requests', to: 'sync#sync_pull_requests'
+scope 'gnosis' do
+  resources :example, only: [:index]
+
+  post 'github_webhook', to: 'gnosis/webhooks#github_webhook_catcher'
+  post 'semaphore_webhook', to: 'gnosis/webhooks#semaphore_webhook_catcher'
+  get 'sync_pull_requests', to: 'gnosis/sync#sync_pull_requests'
+end

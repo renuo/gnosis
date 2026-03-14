@@ -4,7 +4,7 @@ require_relative '../test_helper'
 
 class NumberExtractorTest < Minitest::Test
   def extract_number_from_ref(params)
-    NumberExtractor.call(pull_request: params)
+    Gnosis::NumberExtractor.call(pull_request: params)
   end
 
   def test_ticket_is_matched

@@ -28,9 +28,9 @@ Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
   author 'Anes Hodza'
   description 'This Plugin allows you to see the status of issues in a project'
-  version '1.0.0'
-  url 'https://github.com/aneshodza/gnosis/'
-  author_url 'https://www.aneshodza.ch/'
+  version '2.0.0'
+  url 'https://github.com/renuo/gnosis/'
+  author_url 'https://www.renuo.ch/'
 
   settings default: { }, partial: 'settings/gnosis_settings'
 
@@ -40,7 +40,7 @@ Redmine::Plugin.register :gnosis do
 
   project_module :gnosis do
     permission :sync_pull_requests, {
-      sync: %i[sync_pull_requests]
+      'gnosis/sync': %i[sync_pull_requests]
     }, require: :loggedin
   end
 end
