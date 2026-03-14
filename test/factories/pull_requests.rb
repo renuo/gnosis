@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :pull_request do
+  factory :pull_request, class: 'Gnosis::PullRequest' do
     state { %w[open close merged].sample }
     url { 'example.com' }
     title { 'some pr' }

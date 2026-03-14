@@ -19,7 +19,7 @@ The plugin provides a webhook endpoint for GitHub to call on PR updates.
 Follow these steps to configure it:
 1. Visit `https://github.com/ORG/REPO/settings/hooks`
 2. Click on "Add Webhook"
-3. Enter "Payload URL" to be Redmine URL + `/github_webhook`
+3. Enter "Payload URL" to be Redmine URL + `/gnosis/github_webhook`
 4. The secret is up for you to decide. It's important that this string is complex and secure.
 5. Click "Let me select individual events." and choose "Pull Requests".
 6. Configure the env variable `GITHUB_WEBHOOK_SECRET` with the secret you chose.
@@ -38,7 +38,7 @@ Configure it like this:
 2. Click on "New Notification"
 3. Attributes like "Name of the notification" can be chosen freely. What you need to setup is: Listing your project under
 "in projects", having `/.*-deploy\.yml/` under Pipelines (this just tells the notification to send data every time a
-deploy script is done running), adding your Redmine URL + /semaphore_webhook to "Endpoint" and typing `WEBHOOK_SECRET`
+deploy script is done running), adding your Redmine URL + /gnosis/semaphore_webhook to "Endpoint" and typing `WEBHOOK_SECRET`
 into the "Secret name" field.
 Then go to your_org.semaphoreci.com/notifications and click on "New Secret". The "Name of the Secret" should be
 `WEBHOOK_SECRET`. Then you create an environment variable with the "Variable Name" `WEBHOOK_SECRET`. The "Value" is the

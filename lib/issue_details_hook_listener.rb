@@ -23,12 +23,12 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
   end
 
   def get_prs
-    @prs = PullRequest.where(issue_id: @context[:issue].id).to_a
+    @prs = Gnosis::PullRequest.where(issue_id: @context[:issue].id).to_a
   end
 
   def get_deployments
     @deployments = @prs.map do |pr|
-      PullRequestDeployment.where(pull_request_id: pr['id']).to_a
+      Gnosis::PullRequestDeployment.where(pull_request_id: pr['id']).to_a
     end
   end
 
@@ -57,7 +57,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
         #{formatted_deployments_list.length.positive? ? '<strong>Deployments:</strong>' : ''}
         <ul>
           #{formatted_deployments_list}
-        </ul>  
+        </ul>
       </li>
       LISTOBJECT
     end.join
