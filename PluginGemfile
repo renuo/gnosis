@@ -5,6 +5,7 @@ group :test, :development do
   gem 'brakeman', '~> 6.1'
   gem 'factory_bot_rails', '~> 6.4'
   gem 'byebug'
+  gem 'minitest'
 end
 
 gem 'octokit'
