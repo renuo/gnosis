@@ -4,7 +4,7 @@ require_relative '../test_helper'
 
 class GithubTokenValidatorTest < Minitest::Test
   def test_valid_token
-    Octokit::Client.any_instance.stubs(:user).returns(OpenStruct.new(login: 'testuser'))
+    Octokit::Client.any_instance.stubs(:user).returns(Struct.new(:login).new('testuser'))
 
     assert GithubTokenValidator.valid?('valid_token')
   end
