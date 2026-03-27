@@ -2,6 +2,7 @@
 
 require 'redmine'
 require_relative 'lib/issue_details_hook_listener'
+require_relative 'lib/github_token_validator'
 
 def check_env
   ENV['GITHUB_WEBHOOK_SECRET'].present? ||
@@ -22,7 +23,18 @@ if !check_env && !Rails.env.test?
 end
 # :nocov:
 
-raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && !Rails.env.test?
+# :nocov:
+
+# :nocov:
+def skip_token_validation?
+  Rails.env.test? || ENV['CI'].present?
+end
+
+unless skip_token_validation?
+  raise 'GITHUB_ACCESS_TOKEN is not set' if ENV.fetch('GITHUB_ACCESS_TOKEN', nil).blank?
+  raise 'GITHUB_ACCESS_TOKEN is invalid' unless GithubTokenValidator.valid?(ENV.fetch('GITHUB_ACCESS_TOKEN', nil))
+end
+# :nocov:
 
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'
