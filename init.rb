@@ -23,6 +23,9 @@ if !check_env && !Rails.env.test?
 end
 # :nocov:
 
+# :nocov:
+
+# :nocov:
 def skip_token_validation?
   Rails.env.test? || ENV['CI'].present?
 end
