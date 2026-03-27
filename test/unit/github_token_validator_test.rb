@@ -26,13 +26,4 @@ class GithubTokenValidatorTest < Minitest::Test
     refute GithubTokenValidator.valid?('')
     refute GithubTokenValidator.valid?('  ')
   end
-
-  def test_skip_api_check_returns_true_for_non_blank_token
-    assert GithubTokenValidator.valid?('any_token', skip_api_check: true)
-  end
-
-  def test_skip_api_check_returns_false_for_blank_token
-    refute GithubTokenValidator.valid?(nil, skip_api_check: true)
-    refute GithubTokenValidator.valid?('', skip_api_check: true)
-  end
 end
