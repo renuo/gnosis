@@ -23,8 +23,15 @@ if !check_env && !Rails.env.test?
 end
 # :nocov:
 
-raise 'GITHUB_ACCESS_TOKEN is not set' if ENV['GITHUB_ACCESS_TOKEN'].blank? && ENV['RAILS_ENV'] != 'test'
-raise 'GITHUB_ACCESS_TOKEN is invalid' if ENV['RAILS_ENV'] != 'test' && !GithubTokenValidator.valid?(ENV['GITHUB_ACCESS_TOKEN'])
+def skip_token_validation?
+  Rails.env.test? || ENV['CI'].present?
+end
+
+unless skip_token_validation?
+  raise 'GITHUB_ACCESS_TOKEN is not set' if ENV.fetch('GITHUB_ACCESS_TOKEN', nil).blank?
+  raise 'GITHUB_ACCESS_TOKEN is invalid' unless GithubTokenValidator.valid?(ENV.fetch('GITHUB_ACCESS_TOKEN', nil))
+end
+# :nocov:
 
 Redmine::Plugin.register :gnosis do
   name 'Gnosis plugin'

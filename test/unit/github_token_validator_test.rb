@@ -2,7 +2,7 @@
 
 require_relative '../test_helper'
 
-class GithubTokenValidatorTest < Minitest::Test
+class GithubTokenValidatorTest < ActiveSupport::TestCase
   def test_valid_token
     Octokit::Client.any_instance.stubs(:user).returns(Struct.new(:login).new('testuser'))
 
@@ -12,18 +12,18 @@ class GithubTokenValidatorTest < Minitest::Test
   def test_invalid_token_unauthorized
     Octokit::Client.any_instance.stubs(:user).raises(Octokit::Unauthorized)
 
-    refute GithubTokenValidator.valid?('invalid_token')
+    assert_not GithubTokenValidator.valid?('invalid_token')
   end
 
   def test_invalid_token_forbidden
     Octokit::Client.any_instance.stubs(:user).raises(Octokit::Forbidden)
 
-    refute GithubTokenValidator.valid?('forbidden_token')
+    assert_not GithubTokenValidator.valid?('forbidden_token')
   end
 
   def test_blank_token
-    refute GithubTokenValidator.valid?(nil)
-    refute GithubTokenValidator.valid?('')
-    refute GithubTokenValidator.valid?('  ')
+    assert_not GithubTokenValidator.valid?(nil)
+    assert_not GithubTokenValidator.valid?('')
+    assert_not GithubTokenValidator.valid?('  ')
   end
 end
