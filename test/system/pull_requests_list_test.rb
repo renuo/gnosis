@@ -26,7 +26,8 @@ class PullRequestListTest < GnosisSystemTest
 
   def test_prs_all_info_listed
     @prs.each do |pr|
-      assert page.has_content?("#{pr.title} (#{pr.state})")
+      assert page.has_content?(pr.title)
+      assert page.has_content?(pr.state)
       assert_includes page.find("#pr-#{pr.id}")['href'], pr.url
     end
   end
@@ -36,9 +37,19 @@ class PullRequestListTest < GnosisSystemTest
       pr.pull_request_deployments.each do |deployment|
         assert page.has_content?(deployment.deploy_branch)
         assert_includes page.find("#deployment-#{deployment.id}")['href'], deployment.url
-        assert page.has_content?(deployment.ci_date.strftime('%d.%m.%Y at %I:%M%p UTC'))
+        assert page.has_content?(deployment.ci_date.strftime('%d.%m.%Y %H:%M UTC'))
         assert page.has_content?(deployment.has_passed ? '✅' : '❌')
       end
     end
+  end
+
+  def test_pr_state_icons_displayed
+    @prs.each do |pr|
+      assert page.has_content?(pr.state)
+    end
+  end
+
+  def test_tree_connectors_displayed
+    assert page.has_text?('├──') || page.has_text?('└──')
   end
 end

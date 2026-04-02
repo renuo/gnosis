@@ -8,8 +8,10 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     setup
     <<-HTML
       <hr/>
-      <p><strong>Pull Requests</strong></p>
-      #{@pr_string.length.positive? ? "<ul>#{@pr_string}</ul>" : 'There are currently no PRs open for this issue'}
+      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; margin: 10px 0; font-family: monospace; font-size: 13px;">
+        <div style="font-family: sans-serif; font-size: 15px; font-weight: bold; margin-bottom: 12px;">Pull Requests</div>
+        #{@pr_string.length.positive? ? @pr_string : '<span style="font-family: sans-serif; font-size: 13px;">There are currently no PRs open for this issue</span>'}
+      </div>
     HTML
   end
 
@@ -32,17 +34,39 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     end
   end
 
+  def state_icon(state)
+    case state
+    when 'merged' then '&#x2705;'
+    when 'open' then '&#x1F535;'
+    when 'draft' then '&#x1F4DD;'
+    when 'closed' then '&#x1F534;'
+    else '&#x2753;'
+    end
+  end
+
+  def deployment_status_icon(has_passed)
+    has_passed ? '&#x2705;' : '&#x274C;'
+  end
+
   def set_deployment_strings
     @deployments_strings = @deployments.map do |deployment_list|
-      deployment_list.map do |deployment|
+      deployments_by_branch = {}
+      deployment_list.each { |d| deployments_by_branch[d['deploy_branch']] = d }
+
+      branches = deployments_by_branch.keys
+      branches.each_with_index.map do |branch, idx|
+        deployment = deployments_by_branch[branch]
+        connector = idx == branches.length - 1 ? '&#x2514;&#x2500;&#x2500;' : '&#x251C;&#x2500;&#x2500;'
         <<-LISTOBJECT
-          <li>
-            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>
-              on "#{deployment['deploy_branch']}"
-              at #{deployment['ci_date'].strftime('%d.%m.%Y at %I:%M%p UTC')}
-              #{deployment['has_passed'] ? '✅' : '❌'}
+          <div style="margin-left: 20px; line-height: 1.8;">
+            #{connector} #{branch}
+            &nbsp;&nbsp;
+            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' style="text-decoration: none;">
+              #{deployment_status_icon(deployment['has_passed'])}
             </a>
-          </li>
+            &nbsp;&nbsp;
+            #{deployment['ci_date'].strftime('%d.%m.%Y %H:%M UTC')}
+          </div>
         LISTOBJECT
       end
     end
@@ -50,15 +74,15 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
 
   def set_pr_string
     @pr_string = @prs.each_with_index.map do |pr, index|
-      formatted_deployments_list = @deployments_strings[index].join
+      formatted_deployments = @deployments_strings[index].join
       <<-LISTOBJECT
-      <li>
-        <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}'>#{pr['title']} (#{pr['state']})</a> <br/>
-        #{formatted_deployments_list.length.positive? ? '<strong>Deployments:</strong>' : ''}
-        <ul>
-          #{formatted_deployments_list}
-        </ul>
-      </li>
+        <div style="margin-bottom: 16px;">
+          <div>
+            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' style="text-decoration: none; color: inherit; font-weight: bold; font-family: sans-serif; font-size: 14px;">#{pr['title']}</a>
+            &nbsp;&nbsp;#{state_icon(pr['state'])} #{pr['state']}
+          </div>
+          #{formatted_deployments}
+        </div>
       LISTOBJECT
     end.join
   end
