@@ -10,3 +10,7 @@ scope 'gnosis' do
   post 'semaphore_webhook', to: 'gnosis/webhooks#semaphore_webhook_catcher'
   get 'sync_pull_requests', to: 'gnosis/sync#sync_pull_requests'
 end
+
+resources :projects do
+  get 'gnosis/deployments', to: 'gnosis/deployments#index', as: :gnosis_deployments
+end

@@ -1,0 +1,43 @@
+<h2>Deployments</h2>
+
+<% if @deployments_by_branch.empty? %>
+  <p class="nodata">No deployments found for this project.</p>
+<% else %>
+  <% @deployments_by_branch.each do |branch, deployments| %>
+    <div class="box">
+      <h3><%= h branch %></h3>
+      <table class="list deployments">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Pull Requests</th>
+            <th>Tickets</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% deployments.each do |deployment| %>
+            <tr class="<%= cycle('odd', 'even') %>">
+              <td>
+                <a href="<%= deployment.url %>" target="_blank">
+                  <%= format_time(deployment.ci_date) %>
+                </a>
+              </td>
+              <td><%= deployment.has_passed ? "\u2705" : "\u274C" %></td>
+              <td>
+                <a href="<%= deployment.pull_request.url %>" target="_blank">
+                  <%= h deployment.pull_request.title %>
+                </a>
+                (<%= h deployment.pull_request.state %>)
+              </td>
+              <td>
+                <%= link_to("##{deployment.pull_request.issue.id} #{h deployment.pull_request.issue.subject}",
+                             issue_path(deployment.pull_request.issue)) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+<% end %>
