@@ -14,7 +14,7 @@ class DeploymentsControllerTest < ActionController::TestCase
 
     @pr = FactoryBot.create(:pull_request, issue_id: 1)
     @deployment_main = FactoryBot.create(:pull_request_deployment, pull_request: @pr, deploy_branch: 'main')
-    @deployment_staging = FactoryBot.create(:pull_request_deployment, pull_request: @pr, deploy_branch: 'staging')
+    @deployment_staging = FactoryBot.create(:pull_request_deployment, pull_request: @pr, deploy_branch: 'staging', url: 'https://staging.example.com')
   end
 
   def test_index_shows_only_main_branch_deployments
