@@ -49,6 +49,18 @@ class PullRequestListTest < GnosisSystemTest
     end
   end
 
+  def test_draft_state_icon_displayed
+    FactoryBot.create(:pull_request, issue_id: 1, state: 'draft')
+    visit 'issues/1'
+    assert page.has_content?('draft')
+  end
+
+  def test_closed_state_icon_displayed
+    FactoryBot.create(:pull_request, issue_id: 1, state: 'closed')
+    visit 'issues/1'
+    assert page.has_content?('closed')
+  end
+
   def test_tree_connectors_displayed
     assert page.has_text?('├──') || page.has_text?('└──')
   end
