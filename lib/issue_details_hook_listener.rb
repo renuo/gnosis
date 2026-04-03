@@ -8,9 +8,10 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     setup
     <<-HTML
       <hr/>
-      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; margin: 10px 0; font-family: monospace; font-size: 13px;">
-        <div style="font-family: sans-serif; font-size: 15px; font-weight: bold; margin-bottom: 12px;">Pull Requests</div>
-        #{@pr_string.length.positive? ? @pr_string : '<span style="font-family: sans-serif; font-size: 13px;">There are currently no PRs open for this issue</span>'}
+      <strong>Pull Requests</strong>
+
+      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; margin: 10px 0; font-family: monospace;">
+        #{@pr_string.length.positive? ? @pr_string : '<span style="">There are currently no PRs open for this issue</span>'}
       </div>
     HTML
   end
