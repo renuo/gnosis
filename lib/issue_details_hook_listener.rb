@@ -7,11 +7,44 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     @context = context
     setup
     <<-HTML
+      <style>
+        .gnosis-pr-container {
+          background: #f8f9fa;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          padding: 16px;
+          margin: 10px 0;
+          font-family: monospace;
+        }
+        .gnosis-pr-entry {
+          margin-bottom: 16px;
+        }
+        .gnosis-pr-link {
+          text-decoration: none;
+          color: inherit;
+          font-weight: bold;
+          font-family: sans-serif;
+          font-size: 14px;
+        }
+        .gnosis-deploy-grid {
+          display: grid;
+          grid-template-columns: auto auto auto 1fr;
+          gap: 0 0.8em;
+          align-items: center;
+          margin-left: 20px;
+          line-height: 1.8;
+        }
+        .gnosis-deploy-link {
+          display: contents;
+          text-decoration: none;
+          color: inherit;
+        }
+      </style>
       <hr/>
       <strong>Pull Requests</strong>
 
-      <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; margin: 10px 0; font-family: monospace;">
-        #{@pr_string.length.positive? ? @pr_string : '<span style="">There are currently no PRs open for this issue</span>'}
+      <div class="gnosis-pr-container">
+        #{@pr_string.length.positive? ? @pr_string : '<span>There are currently no PRs open for this issue</span>'}
       </div>
     HTML
   end
@@ -37,16 +70,16 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
 
   def state_icon(state)
     case state
-    when 'merged' then '&#x2705;'
-    when 'open' then '&#x1F535;'
-    when 'draft' then '&#x1F4DD;'
-    when 'closed' then '&#x1F534;'
-    else '&#x2753;'
+    when 'merged' then '✅'
+    when 'open' then '🔵'
+    when 'draft' then '📝'
+    when 'closed' then '🔴'
+    else '❓'
     end
   end
 
   def deployment_status_icon(has_passed)
-    has_passed ? '&#x2705;' : '&#x274C;'
+    has_passed ? '✅' : '❌'
   end
 
   def set_deployment_strings
@@ -59,9 +92,9 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
 
       rows = branches.each_with_index.map do |branch, idx|
         deployment = deployments_by_branch[branch]
-        connector = idx == branches.length - 1 ? '&#x2514;&#x2500;&#x2500;' : '&#x251C;&#x2500;&#x2500;'
+        connector = idx == branches.length - 1 ? '└──' : '├──'
         <<-ROW
-          <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' style="display: contents; text-decoration: none; color: inherit;">
+          <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' class="gnosis-deploy-link">
             <span>#{connector}</span>
             <span>#{branch}</span>
             <span>#{deployment_status_icon(deployment['has_passed'])}</span>
@@ -71,7 +104,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
       end.join
 
       <<-GRID
-        <div style="display: grid; grid-template-columns: auto auto auto 1fr; gap: 0 0.8em; align-items: center; margin-left: 20px; line-height: 1.8;">
+        <div class="gnosis-deploy-grid">
           #{rows}
         </div>
       GRID
@@ -82,9 +115,9 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     @pr_string = @prs.each_with_index.map do |pr, index|
       formatted_deployments = @deployments_strings[index]
       <<-LISTOBJECT
-        <div style="margin-bottom: 16px;">
+        <div class="gnosis-pr-entry">
           <div>
-            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' style="text-decoration: none; color: inherit; font-weight: bold; font-family: sans-serif; font-size: 14px;">#{pr['title']}</a>
+            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' class="gnosis-pr-link">#{pr['title']}</a>
             &nbsp;&nbsp;#{state_icon(pr['state'])} #{pr['state']}
           </div>
           #{formatted_deployments}
