@@ -7,19 +7,27 @@ module Gnosis
     PER_PAGE = 20
 
     def index
-      scope = PullRequestDeployment
-              .joins(pull_request: :issue)
-              .where(issues: { project_id: @project.id })
-              .where(deploy_branch: 'main')
+      base_scope = PullRequestDeployment
+                   .joins(pull_request: :issue)
+                   .where(issues: { project_id: @project.id })
+                   .where(deploy_branch: 'main')
 
-      @deployment_count = scope.count
+      @deployment_count = base_scope.distinct.count(:url)
       @deployment_pages = Redmine::Pagination::Paginator.new(@deployment_count, PER_PAGE, params[:page])
 
-      @deployments = scope
-                     .includes(pull_request: :issue)
-                     .order(ci_date: :desc)
-                     .limit(PER_PAGE)
-                     .offset(@deployment_pages.offset)
+      deployment_urls = base_scope
+                        .group(:url)
+                        .order(Arel.sql('MAX(gnosis_pull_request_deployments.ci_date) DESC'))
+                        .limit(PER_PAGE)
+                        .offset(@deployment_pages.offset)
+                        .pluck(:url)
+
+      deployments = base_scope
+                    .includes(pull_request: :issue)
+                    .where(url: deployment_urls)
+                    .order(ci_date: :desc)
+
+      @grouped_deployments = deployments.group_by(&:url).sort_by { |_url, deps| -deps.first.ci_date.to_i }
     end
   end
 end

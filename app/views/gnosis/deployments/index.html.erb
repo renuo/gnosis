@@ -1,42 +1,55 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'gnosis_deployments', plugin: 'gnosis' %>
+<% end %>
+
 <h2>Deployments</h2>
 
-<%= pagination_links_full @deployment_pages %>
+<div class="pagination"><%= pagination_links_full @deployment_pages %></div>
 
-<% if @deployments.empty? %>
+<% if @grouped_deployments.empty? %>
   <p class="nodata">No deployments found for this project.</p>
 <% else %>
-  <table class="list deployments">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Pull Requests</th>
-        <th>Tickets</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @deployments.each do |deployment| %>
-        <tr class="<%= cycle('odd', 'even') %>">
-          <td>
-            <a href="<%= deployment.url %>" target="_blank">
-              <%= format_time(deployment.ci_date) %>
-            </a>
-          </td>
-          <td><%= deployment.has_passed ? "\u2705" : "\u274C" %></td>
-          <td>
-            <a href="<%= deployment.pull_request.url %>" target="_blank">
-              <%= h deployment.pull_request.title %>
-            </a>
-            (<%= h deployment.pull_request.state %>)
-          </td>
-          <td>
-            <%= link_to("##{deployment.pull_request.issue.id} #{h deployment.pull_request.issue.subject}",
-                         issue_path(deployment.pull_request.issue)) %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <% @grouped_deployments.each do |url, deployments| %>
+    <% representative = deployments.first %>
+    <% issues = deployments.map { |d| d.pull_request.issue }.uniq %>
+    <div class="deployment-card">
+      <div class="deployment-card-header">
+        <span>
+          <a href="<%= url %>" target="_blank"><%= format_time(representative.ci_date) %></a>
+        </span>
+        <span class="deployment-status <%= representative.has_passed ? 'passed' : 'failed' %>">
+          <%= representative.has_passed ? 'Passed' : 'Failed' %>
+        </span>
+      </div>
+      <div class="deployment-card-tickets">
+        Tickets:
+        <% issues.each_with_index do |issue, i| %>
+          <%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %><%= ',' unless i == issues.length - 1 %>
+        <% end %>
+      </div>
+      <table class="list">
+        <thead>
+          <tr>
+            <th>Pull Request</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% deployments.each do |deployment| %>
+            <tr class="<%= cycle('odd', 'even', name: url) %>">
+              <td>
+                <a href="<%= deployment.pull_request.url %>" target="_blank">
+                  <%= h deployment.pull_request.title %>
+                </a>
+              </td>
+              <td><%= h deployment.pull_request.state %></td>
+            </tr>
+          <% end %>
+          <% reset_cycle(url) %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 
-  <%= pagination_links_full @deployment_pages %>
+  <div class="pagination"><%= pagination_links_full @deployment_pages %></div>
 <% end %>

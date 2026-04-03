@@ -40,6 +40,13 @@ class DeploymentsPageTest < GnosisSystemTest
     assert page.has_content?(Issue.find(2).subject)
   end
 
+  def test_deployment_shows_card_structure
+    visit "projects/#{@project.identifier}/gnosis/deployments"
+    assert page.has_css?('.deployment-card')
+    assert page.has_css?('.deployment-card-header')
+    assert page.has_css?('.deployment-card-tickets')
+  end
+
   def test_empty_deployments
     Gnosis::PullRequestDeployment.destroy_all
     visit "projects/#{@project.identifier}/gnosis/deployments"

@@ -39,7 +39,31 @@ class DeploymentsControllerTest < ActionController::TestCase
   def test_index_shows_ticket_link
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select 'a', text: /#{@pr.issue.subject}/
+    assert_select '.deployment-card-tickets a', text: /#{@pr.issue.subject}/
+  end
+
+  def test_index_shows_deployment_card_structure
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 1
+    assert_select '.deployment-card-header'
+    assert_select '.deployment-card-tickets'
+    assert_select '.deployment-status'
+  end
+
+  def test_index_groups_deployments_by_url
+    pr2 = FactoryBot.create(:pull_request, issue_id: 2)
+    FactoryBot.create(
+      :pull_request_deployment,
+      pull_request: pr2,
+      deploy_branch: 'main',
+      url: @deployment_main.url
+    )
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 1
+    assert_select '.deployment-card table.list tbody tr', 2
   end
 
   def test_index_empty_project
