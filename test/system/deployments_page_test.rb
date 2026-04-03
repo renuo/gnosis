@@ -22,10 +22,10 @@ class DeploymentsPageTest < GnosisSystemTest
     assert page.has_content?('Deployments')
   end
 
-  def test_deployments_grouped_by_branch
+  def test_deployments_shows_only_main_branch
     visit "projects/#{@project.identifier}/gnosis/deployments"
-    assert page.has_content?('main')
-    assert page.has_content?('staging')
+    assert page.has_content?(@pr1.title)
+    assert page.has_no_content?('staging')
   end
 
   def test_deployment_shows_pull_request_info

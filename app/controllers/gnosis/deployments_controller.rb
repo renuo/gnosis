@@ -10,16 +10,16 @@ module Gnosis
       scope = PullRequestDeployment
               .joins(pull_request: :issue)
               .where(issues: { project_id: @project.id })
+              .where(deploy_branch: 'main')
 
       @deployment_count = scope.count
       @deployment_pages = Redmine::Pagination::Paginator.new(@deployment_count, PER_PAGE, params[:page])
 
-      @deployments_by_branch = scope
-                               .includes(pull_request: :issue)
-                               .order(ci_date: :desc)
-                               .limit(PER_PAGE)
-                               .offset(@deployment_pages.offset)
-                               .group_by(&:deploy_branch)
+      @deployments = scope
+                     .includes(pull_request: :issue)
+                     .order(ci_date: :desc)
+                     .limit(PER_PAGE)
+                     .offset(@deployment_pages.offset)
     end
   end
 end

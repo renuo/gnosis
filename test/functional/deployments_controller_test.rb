@@ -17,11 +17,11 @@ class DeploymentsControllerTest < ActionController::TestCase
     @deployment_staging = FactoryBot.create(:pull_request_deployment, pull_request: @pr, deploy_branch: 'staging')
   end
 
-  def test_index_groups_by_deploy_branch
+  def test_index_shows_only_main_branch_deployments
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select 'h3', text: 'main'
-    assert_select 'h3', text: 'staging'
+    assert_select 'a[href=?]', @deployment_main.url
+    assert_select 'a[href=?]', @deployment_staging.url, count: 0
   end
 
   def test_index_shows_deployment_details
