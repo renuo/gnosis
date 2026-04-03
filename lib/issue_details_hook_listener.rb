@@ -59,15 +59,12 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
         deployment = deployments_by_branch[branch]
         connector = idx == branches.length - 1 ? '&#x2514;&#x2500;&#x2500;' : '&#x251C;&#x2500;&#x2500;'
         <<-LISTOBJECT
-          <div style="margin-left: 20px; line-height: 1.8;">
-            #{connector} #{branch}
-            &nbsp;&nbsp;
-            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' style="text-decoration: none;">
-              #{deployment_status_icon(deployment['has_passed'])}
-            </a>
-            &nbsp;&nbsp;
-            #{deployment['ci_date'].strftime('%d.%m.%Y %H:%M UTC')}
-          </div>
+          <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' style="display: grid; grid-template-columns: 3em auto auto 1fr; gap: 0 0.8em; align-items: center; margin-left: 20px; line-height: 1.8; text-decoration: none; color: inherit;">
+            <span>#{connector}</span>
+            <span>#{branch}</span>
+            <span>#{deployment_status_icon(deployment['has_passed'])}</span>
+            <span>#{deployment['ci_date'].strftime('%d.%m.%Y %H:%M UTC')}</span>
+          </a>
         LISTOBJECT
       end
     end
