@@ -7,9 +7,39 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     @context = context
     setup
     <<-HTML
+      <style>
+        .gnosis-pr-container {
+          background: #f8f9fa;
+          border: 1px solid #e0e0e0;
+          padding: 16px;
+          margin: 10px 0;
+          font-family: monospace;
+        }
+        .gnosis-pr-entry {
+          margin-bottom: 16px;
+        }
+        .gnosis-pr-link {
+          color: inherit;
+          font-weight: bold;
+        }
+        .gnosis-deploy-grid {
+          display: grid;
+          grid-template-columns: auto auto auto 1fr;
+          gap: 0 0.8em;
+          align-items: center;
+          line-height: 1.8;
+        }
+        .gnosis-deploy-link {
+          display: contents;
+          color: inherit;
+        }
+      </style>
       <hr/>
-      <p><strong>Pull Requests</strong></p>
-      #{@pr_string.length.positive? ? "<ul>#{@pr_string}</ul>" : 'There are currently no PRs open for this issue'}
+      <strong>Pull Requests</strong>
+
+      <div class="gnosis-pr-container">
+        #{@pr_string.length.positive? ? @pr_string : '<span>There are currently no PRs open for this issue</span>'}
+      </div>
     HTML
   end
 
@@ -32,33 +62,60 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     end
   end
 
+  def state_icon(state)
+    case state
+    when 'merged' then '✅'
+    when 'open' then '🔵'
+    when 'draft' then '📝'
+    when 'closed' then '🔴'
+    else '❓'
+    end
+  end
+
+  def deployment_status_icon(has_passed)
+    has_passed ? '✅' : '❌'
+  end
+
   def set_deployment_strings
     @deployments_strings = @deployments.map do |deployment_list|
-      deployment_list.map do |deployment|
-        <<-LISTOBJECT
-          <li>
-            <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}'>
-              on "#{deployment['deploy_branch']}"
-              at #{deployment['ci_date'].strftime('%d.%m.%Y at %I:%M%p UTC')}
-              #{deployment['has_passed'] ? '✅' : '❌'}
-            </a>
-          </li>
-        LISTOBJECT
-      end
+      deployments_by_branch = {}
+      deployment_list.each { |d| deployments_by_branch[d['deploy_branch']] = d }
+
+      branches = deployments_by_branch.keys
+      next '' if branches.empty?
+
+      rows = branches.each_with_index.map do |branch, idx|
+        deployment = deployments_by_branch[branch]
+        connector = idx == branches.length - 1 ? '└──' : '├──'
+        <<-ROW
+          <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' class="gnosis-deploy-link">
+            <span>#{connector}</span>
+            <span>#{branch}</span>
+            <span>#{deployment_status_icon(deployment['has_passed'])}</span>
+            <span>#{deployment['ci_date'].strftime('%d.%m.%Y %H:%M UTC')}</span>
+          </a>
+        ROW
+      end.join
+
+      <<-GRID
+        <div class="gnosis-deploy-grid">
+          #{rows}
+        </div>
+      GRID
     end
   end
 
   def set_pr_string
     @pr_string = @prs.each_with_index.map do |pr, index|
-      formatted_deployments_list = @deployments_strings[index].join
+      formatted_deployments = @deployments_strings[index]
       <<-LISTOBJECT
-      <li>
-        <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}'>#{pr['title']} (#{pr['state']})</a> <br/>
-        #{formatted_deployments_list.length.positive? ? '<strong>Deployments:</strong>' : ''}
-        <ul>
-          #{formatted_deployments_list}
-        </ul>
-      </li>
+        <div class="gnosis-pr-entry">
+          <div>
+            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' class="gnosis-pr-link">#{pr['title']}</a>
+            &nbsp;&nbsp;#{state_icon(pr['state'])} #{pr['state']}
+          </div>
+          #{formatted_deployments}
+        </div>
       LISTOBJECT
     end.join
   end
