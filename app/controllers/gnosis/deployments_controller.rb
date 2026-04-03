@@ -6,11 +6,11 @@ module Gnosis
 
     def index
       @deployments_by_branch = PullRequestDeployment
-        .joins(pull_request: :issue)
-        .where(issues: { project_id: @project.id })
-        .includes(pull_request: :issue)
-        .order(ci_date: :desc)
-        .group_by(&:deploy_branch)
+                               .joins(pull_request: :issue)
+                               .where(issues: { project_id: @project.id })
+                               .includes(pull_request: :issue)
+                               .order(ci_date: :desc)
+                               .group_by(&:deploy_branch)
     end
   end
 end
