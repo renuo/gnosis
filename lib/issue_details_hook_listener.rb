@@ -11,7 +11,6 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
         .gnosis-pr-container {
           background: #f8f9fa;
           border: 1px solid #e0e0e0;
-          border-radius: 6px;
           padding: 16px;
           margin: 10px 0;
           font-family: monospace;
@@ -20,23 +19,18 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
           margin-bottom: 16px;
         }
         .gnosis-pr-link {
-          text-decoration: none;
           color: inherit;
           font-weight: bold;
-          font-family: sans-serif;
-          font-size: 14px;
         }
         .gnosis-deploy-grid {
           display: grid;
           grid-template-columns: auto auto auto 1fr;
           gap: 0 0.8em;
           align-items: center;
-          margin-left: 20px;
           line-height: 1.8;
         }
         .gnosis-deploy-link {
           display: contents;
-          text-decoration: none;
           color: inherit;
         }
       </style>
