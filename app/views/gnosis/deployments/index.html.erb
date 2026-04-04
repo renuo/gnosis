@@ -1,0 +1,52 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'gnosis_deployments', plugin: 'gnosis' %>
+<% end %>
+
+<h2>Deployments</h2>
+
+<% if @grouped_deployments.empty? %>
+  <p class="nodata">No deployments found for this project.</p>
+<% else %>
+  <% @grouped_deployments.each do |url, deployments| %>
+    <% representative = deployments.first %>
+    <% issues = deployments.map { |d| d.pull_request.issue }.uniq %>
+    <div class="deployment-card">
+      <div class="deployment-card-header">
+        <a href="<%= url %>" target="_blank"><%= format_time(representative.ci_date) %></a>
+      </div>
+      <div class="deployment-card-tickets">
+        Tickets:
+        <ul class="deployment-ticket-list">
+          <% issues.each do |issue| %>
+            <li><%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %></li>
+          <% end %>
+        </ul>
+      </div>
+      <table class="list">
+        <thead>
+          <tr>
+            <th>Pull Request</th>
+            <th>Ticket</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% deployments.each do |deployment| %>
+            <tr class="<%= cycle('odd', 'even', name: url) %>">
+              <td class="deployment-pr-title">
+                <a href="<%= deployment.pull_request.url %>" target="_blank">
+                  <%= h deployment.pull_request.title %>
+                </a>
+              </td>
+              <td class="deployment-pr-ticket">
+                <%= link_to "##{deployment.pull_request.issue.id}", issue_path(deployment.pull_request.issue) %>
+              </td>
+            </tr>
+          <% end %>
+          <% reset_cycle(url) %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <div class="pagination"><%= pagination_links_full @deployment_pages %></div>
+<% end %>

@@ -36,6 +36,9 @@ Redmine::Plugin.register :gnosis do
 
   project_module :gnosis do
     permission :view_list, {}
+    permission :view_deployments, {
+      'gnosis/deployments': [:index]
+    }
   end
 
   project_module :gnosis do
@@ -43,4 +46,7 @@ Redmine::Plugin.register :gnosis do
       'gnosis/sync': %i[sync_pull_requests]
     }, require: :loggedin
   end
+
+  menu :project_menu, :gnosis_deployments, { controller: 'gnosis/deployments', action: 'index' },
+       caption: :label_gnosis_deployments, after: :activity, param: :project_id
 end
