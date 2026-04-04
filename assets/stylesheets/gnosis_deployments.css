@@ -5,12 +5,11 @@
   background: #fff;
 
   .deployment-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 8px 12px;
     background: #f8f8f8;
     border-bottom: 1px solid #d7d7d7;
+    font-size: 1.1em;
+    font-weight: bold;
   }
 
   .deployment-card-tickets {
@@ -20,6 +19,16 @@
     color: #505050;
   }
 
+  .deployment-ticket-list {
+    margin: 4px 0 0 0;
+    padding-left: 18px;
+    list-style: none;
+
+    li {
+      padding: 1px 0;
+    }
+  }
+
   table.list {
     margin: 0;
     border: none;
@@ -27,22 +36,16 @@
     th, td {
       border-left: none;
       border-right: none;
+      text-align: left;
     }
 
     tr:last-child td {
       border-bottom: none;
     }
   }
-}
 
-.deployment-status {
-  font-weight: bold;
-
-  &.passed {
-    color: #3a8c0a;
-  }
-
-  &.failed {
-    color: #c22;
+  .deployment-pr-ticket {
+    width: 80px;
+    white-space: nowrap;
   }
 }

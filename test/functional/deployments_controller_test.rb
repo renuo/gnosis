@@ -36,10 +36,16 @@ class DeploymentsControllerTest < ActionController::TestCase
     assert_select 'a[href=?]', @pr.url
   end
 
-  def test_index_shows_ticket_link
+  def test_index_shows_ticket_list
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select '.deployment-card-tickets a', text: /#{@pr.issue.subject}/
+    assert_select '.deployment-ticket-list li a', text: /#{@pr.issue.subject}/
+  end
+
+  def test_index_shows_ticket_in_pr_row
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-pr-ticket a', text: "##{@pr.issue.id}"
   end
 
   def test_index_shows_deployment_card_structure
@@ -48,7 +54,6 @@ class DeploymentsControllerTest < ActionController::TestCase
     assert_select '.deployment-card', 1
     assert_select '.deployment-card-header'
     assert_select '.deployment-card-tickets'
-    assert_select '.deployment-status'
   end
 
   def test_index_groups_deployments_by_url
