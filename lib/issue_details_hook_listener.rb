@@ -44,17 +44,6 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
         #{@pr_string.length.positive? ? @pr_string : '<span>There are currently no PRs open for this issue</span>'}
       </div>
 
-      <script>
-        document.querySelectorAll('.gnosis-local-time').forEach(function(el) {
-          var date = new Date(el.getAttribute('datetime'));
-          var day = String(date.getDate()).padStart(2, '0');
-          var month = String(date.getMonth() + 1).padStart(2, '0');
-          var year = date.getFullYear();
-          var hours = String(date.getHours()).padStart(2, '0');
-          var minutes = String(date.getMinutes()).padStart(2, '0');
-          el.textContent = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
-        });
-      </script>
     HTML
   end
 
@@ -91,6 +80,12 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     has_passed ? '✅' : '❌'
   end
 
+  def format_deployment_time(time)
+    user_zone = User.current.time_zone
+    local_time = user_zone ? time.in_time_zone(user_zone) : time.utc
+    local_time.strftime('%d.%m.%Y %H:%M')
+  end
+
   def set_deployment_strings
     @deployments_strings = @deployments.map do |deployment_list|
       deployments_by_branch = {}
@@ -107,7 +102,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
             <span>#{connector}</span>
             <span>#{branch}</span>
             <span>#{deployment_status_icon(deployment['has_passed'])}</span>
-            <span><time class="gnosis-local-time" datetime="#{deployment['ci_date'].utc.strftime('%Y-%m-%dT%H:%M:%SZ')}">#{deployment['ci_date'].strftime('%d.%m.%Y %H:%M UTC')}</time></span>
+            <span>#{format_deployment_time(deployment['ci_date'])}</span>
           </a>
         ROW
       end.join
