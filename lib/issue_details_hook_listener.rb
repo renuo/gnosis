@@ -9,18 +9,21 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
     <<-HTML
       <style>
         .gnosis-pr-container {
-          background: #f8f9fa;
-          border: 1px solid #e0e0e0;
-          padding: 16px;
-          margin: 10px 0;
+          background: rgba(0, 0, 0, 0.03);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          padding: 1rem;
+          margin: 0.625rem 0;
           font-family: monospace;
         }
         .gnosis-pr-entry {
-          margin-bottom: 16px;
+          margin-bottom: 1rem;
         }
         .gnosis-pr-link {
           color: inherit;
           font-weight: bold;
+        }
+        .gnosis-pr-state {
+          margin-left: 0.5rem;
         }
         .gnosis-deploy-grid {
           display: grid;
@@ -64,9 +67,9 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
 
   def state_icon(state)
     case state
-    when 'merged' then '✅'
-    when 'open' then '🔵'
-    when 'draft' then '📝'
+    when 'merged' then '🟣'
+    when 'open' then '🟢'
+    when 'draft' then '⚫'
     when 'closed' then '🔴'
     else '❓'
     end
@@ -79,7 +82,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
   def set_deployment_strings
     @deployments_strings = @deployments.map do |deployment_list|
       deployments_by_branch = {}
-      deployment_list.each { |d| deployments_by_branch[d['deploy_branch']] = d }
+      deployment_list.each { |deployment| deployments_by_branch[deployment['deploy_branch']] = deployment }
 
       branches = deployments_by_branch.keys
       next '' if branches.empty?
@@ -112,7 +115,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
         <div class="gnosis-pr-entry">
           <div>
             <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' class="gnosis-pr-link">#{pr['title']}</a>
-            &nbsp;&nbsp;#{state_icon(pr['state'])} #{pr['state']}
+            <span class="gnosis-pr-state">#{state_icon(pr['state'])} #{pr['state']}</span>
           </div>
           #{formatted_deployments}
         </div>
