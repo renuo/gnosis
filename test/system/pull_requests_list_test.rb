@@ -37,7 +37,8 @@ class PullRequestListTest < GnosisSystemTest
       pr.pull_request_deployments.each do |deployment|
         assert page.has_content?(deployment.deploy_branch)
         assert_includes page.find("#deployment-#{deployment.id}")['href'], deployment.url
-        assert page.has_content?(deployment.ci_date.strftime('%d.%m.%Y %H:%M UTC'))
+        time_element = page.find("#deployment-#{deployment.id}").find('time.gnosis-local-time', visible: :all)
+        assert_equal deployment.ci_date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), time_element['datetime']
         assert page.has_content?(deployment.has_passed ? '✅' : '❌')
       end
     end
