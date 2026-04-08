@@ -12,14 +12,31 @@
     font-weight: bold;
   }
 
+  .deployment-card-tickets {
+    padding: 8px 12px;
+    border-bottom: 1px solid #d7d7d7;
+
+    ul {
+      margin: 4px 0 0 16px;
+      padding: 0;
+    }
+  }
+
   table.list {
     margin: 0;
     border: none;
+    table-layout: fixed;
+    width: 100%;
 
     th, td {
       border-left: none;
       border-right: none;
       text-align: left;
+    }
+
+    th:last-child,
+    td.deployment-pivot-ticket {
+      width: 100px;
     }
 
     tr:last-child td {
@@ -30,6 +47,6 @@
   .deployment-pivot-ticket {
     white-space: nowrap;
     vertical-align: top;
-    border-right: 1px solid #eee;
+    border-left: 1px solid #eee;
   }
 }

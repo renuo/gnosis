@@ -39,7 +39,13 @@ class DeploymentsControllerTest < ActionController::TestCase
   def test_index_shows_ticket_in_pivot_table
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select '.deployment-pivot-ticket a', text: /#{@pr.issue.subject}/
+    assert_select '.deployment-pivot-ticket a', text: "##{@pr.issue_id}"
+  end
+
+  def test_index_shows_ticket_summary
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card-tickets a', text: /#{@pr.issue.subject}/
   end
 
   def test_index_shows_deployment_card_structure
