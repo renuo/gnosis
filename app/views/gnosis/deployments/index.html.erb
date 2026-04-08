@@ -14,41 +14,34 @@
       <div class="deployment-card-header">
         <a href="<%= url %>" target="_blank"><%= I18n.l(representative.ci_date, format: '%A') %> <%= format_time(representative.ci_date) %></a>
       </div>
-      <div class="deployment-card-tickets">
-        <strong>Tickets:</strong>
-        <ul>
-          <% deployments_by_issue.each_value do |issue_deps| %>
-            <% issue = issue_deps.first.pull_request.issue %>
-            <li><%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %></li>
-          <% end %>
-        </ul>
-      </div>
       <table class="list">
         <thead>
-          <tr>
-            <th>Pull Request</th>
-            <th>Ticket</th>
-          </tr>
+        <tr>
+          <th>Ticket</th>
+          <th>Pull Request</th>
+        </tr>
         </thead>
         <tbody>
-          <% deployments_by_issue.each_value do |issue_deployments| %>
-            <% issue = issue_deployments.first.pull_request.issue %>
-            <% issue_deployments.each_with_index do |deployment, index| %>
-              <tr class="<%= cycle('odd', 'even', name: url) %>">
-                <td class="deployment-pr-title">
-                  <a href="<%= deployment.pull_request.url %>" target="_blank">
-                    <%= h deployment.pull_request.title %>
-                  </a>
-                </td>
-                <% if index == 0 %>
-                  <td class="deployment-pivot-ticket" rowspan="<%= issue_deployments.size %>">
-                    <%= link_to "##{issue.id}", issue_path(issue) %>
-                  </td>
-                <% end %>
-              </tr>
-            <% end %>
+        <% deployments_by_issue.each_value do |issue_deployments| %>
+          <% issue = issue_deployments.first.pull_request.issue %>
+          <tr class="<%= cycle('odd', 'even', name: url) %>">
+            <td class="deployment-pivot-ticket" colspan="2">
+              <%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %>
+            </td>
+          </tr>
+          <% issue_deployments.each_with_index do |deployment, index| %>
+            <tr class="<%= cycle('odd', 'even', name: url) %>">
+              <td class="deployment-pivot-ticket">
+              </td>
+              <td class="deployment-pr-title">
+                <a href="<%= deployment.pull_request.url %>" target="_blank">
+                  <%= h deployment.pull_request.title %>
+                </a>
+              </td>
+            </tr>
           <% end %>
-          <% reset_cycle(url) %>
+        <% end %>
+        <% reset_cycle(url) %>
         </tbody>
       </table>
     </div>
