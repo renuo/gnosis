@@ -39,13 +39,13 @@ class DeploymentsControllerTest < ActionController::TestCase
   def test_index_shows_ticket_in_pivot_table
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select '.deployment-pivot-ticket a', text: "##{@pr.issue_id}"
+    assert_select '.deployment-pivot-ticket a', text: "##{@pr.issue_id} #{@pr.issue.subject}"
   end
 
   def test_index_shows_ticket_summary
     get :index, params: { project_id: @project.identifier }
     assert_response :success
-    assert_select '.deployment-card-tickets a', text: /#{@pr.issue.subject}/
+    assert_select '.deployment-pivot-ticket a', text: /#{Regexp.escape(@pr.issue.subject)}/
   end
 
   def test_index_shows_deployment_card_structure
@@ -67,7 +67,7 @@ class DeploymentsControllerTest < ActionController::TestCase
     get :index, params: { project_id: @project.identifier }
     assert_response :success
     assert_select '.deployment-card', 1
-    assert_select '.deployment-card table.list tbody tr', 2
+    assert_select '.deployment-card table.list tbody tr', 4
   end
 
   def test_index_empty_project
