@@ -4,8 +4,7 @@ module Gnosis
   class DeploymentsController < ::ApplicationController
     before_action :find_project_by_project_id, :authorize
 
-    PER_PAGE = 20
-
+    DEPLOYMENTS_PER_PAGE = 20
     def index
       base_scope = PullRequestDeployment
                    .joins(pull_request: :issue)
@@ -13,12 +12,12 @@ module Gnosis
                    .where(deploy_branch: 'main')
 
       @deployment_count = base_scope.distinct.count(:url)
-      @deployment_pages = Redmine::Pagination::Paginator.new(@deployment_count, PER_PAGE, params[:page])
+      @deployment_pages = Redmine::Pagination::Paginator.new(@deployment_count, DEPLOYMENTS_PER_PAGE, params[:page])
 
       deployment_urls = base_scope
                         .group(:url)
                         .order(Arel.sql('MAX(gnosis_pull_request_deployments.ci_date) DESC'))
-                        .limit(PER_PAGE)
+                        .limit(DEPLOYMENTS_PER_PAGE)
                         .offset(@deployment_pages.offset)
                         .pluck(:url)
 
@@ -28,6 +27,10 @@ module Gnosis
                     .order(ci_date: :desc)
 
       @grouped_deployments = deployments.group_by(&:url).sort_by { |_url, deps| -deps.first.ci_date.to_i }
+    end
+
+    def current_menu_item
+      :gnosis_deployments
     end
   end
 end
