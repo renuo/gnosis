@@ -44,7 +44,7 @@ class DeploymentsPageTest < GnosisSystemTest
     visit "projects/#{@project.identifier}/gnosis/deployments"
     assert page.has_css?('.deployment-card')
     assert page.has_css?('.deployment-card-header')
-    assert page.has_css?('.deployment-card-tickets')
+    assert page.has_css?('.deployment-pivot-ticket')
   end
 
   def test_empty_deployments

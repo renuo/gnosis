@@ -12,23 +12,6 @@
     font-weight: bold;
   }
 
-  .deployment-card-tickets {
-    padding: 8px 12px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9em;
-    color: #505050;
-  }
-
-  .deployment-ticket-list {
-    margin: 4px 0 0 0;
-    padding-left: 18px;
-    list-style: none;
-
-    li {
-      padding: 1px 0;
-    }
-  }
-
   table.list {
     margin: 0;
     border: none;
@@ -44,8 +27,9 @@
     }
   }
 
-  .deployment-pr-ticket {
-    width: 80px;
+  .deployment-pivot-ticket {
     white-space: nowrap;
+    vertical-align: top;
+    border-right: 1px solid #eee;
   }
 }
