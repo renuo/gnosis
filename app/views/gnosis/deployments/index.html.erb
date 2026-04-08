@@ -9,7 +9,7 @@
 <% else %>
   <% @grouped_deployments.each do |url, deployments| %>
     <% representative = deployments.first %>
-    <% deployments_by_issue = deployments.group_by { |d| d.pull_request.issue } %>
+    <% deployments_by_issue = deployments.sort_by { |d| d.pull_request.issue_id }.group_by { |d| d.pull_request.issue_id } %>
     <div class="deployment-card">
       <div class="deployment-card-header">
         <a href="<%= url %>" target="_blank"><%= I18n.l(representative.ci_date, format: '%A') %> <%= format_time(representative.ci_date) %></a>
@@ -17,7 +17,8 @@
       <div class="deployment-card-tickets">
         <strong>Tickets:</strong>
         <ul>
-          <% deployments_by_issue.each_key do |issue| %>
+          <% deployments_by_issue.each_value do |issue_deps| %>
+            <% issue = issue_deps.first.pull_request.issue %>
             <li><%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %></li>
           <% end %>
         </ul>
@@ -30,7 +31,8 @@
           </tr>
         </thead>
         <tbody>
-          <% deployments_by_issue.each do |issue, issue_deployments| %>
+          <% deployments_by_issue.each_value do |issue_deployments| %>
+            <% issue = issue_deployments.first.pull_request.issue %>
             <% issue_deployments.each_with_index do |deployment, index| %>
               <tr class="<%= cycle('odd', 'even', name: url) %>">
                 <td class="deployment-pr-title">
