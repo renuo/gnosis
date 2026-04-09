@@ -1,0 +1,42 @@
+.deployment-card {
+  border: 1px solid #d7d7d7;
+  border-radius: 3px;
+  margin-bottom: 16px;
+  background: #fff;
+
+  .deployment-card-header {
+    padding: 8px 12px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #d7d7d7;
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+
+  table.list {
+    margin: 0;
+    border: none;
+    table-layout: fixed;
+    width: 100%;
+
+    th, td {
+      border-left: none;
+      border-right: none;
+      text-align: left;
+    }
+
+    th:first-child,
+    td.deployment-pivot-ticket {
+      min-width: 300px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .deployment-pivot-ticket {
+    white-space: nowrap;
+    vertical-align: top;
+    border-left: 1px solid #eee;
+  }
+}
