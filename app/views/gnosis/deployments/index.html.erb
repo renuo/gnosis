@@ -7,9 +7,8 @@
 <% if @grouped_deployments.empty? %>
   <p class="nodata">No deployments found for this project.</p>
 <% else %>
-  <% @grouped_deployments.each do |url, deployments| %>
+  <% @grouped_deployments.each do |url, deployments, deployments_by_issue| %>
     <% representative = deployments.first %>
-    <% deployments_by_issue = deployments.sort_by { |d| d.pull_request.issue_id }.group_by { |d| d.pull_request.issue_id } %>
     <div class="deployment-card">
       <div class="deployment-card-header">
         <a href="<%= url %>" target="_blank"><%= I18n.l(representative.ci_date, format: '%A') %> <%= format_time(representative.ci_date) %></a>
