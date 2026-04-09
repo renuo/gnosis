@@ -26,7 +26,7 @@
 
     th:first-child,
     td.deployment-pivot-ticket {
-      width: 300px;
+      min-width: 300px;
     }
 
     tr:last-child td {
