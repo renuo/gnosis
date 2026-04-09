@@ -2,8 +2,8 @@
 
 module Gnosis
   class DeploymentsController < ::ApplicationController
-    before_action :authorize
     before_action :find_project_by_project_id
+    before_action :authorize
 
     DEPLOYMENTS_PER_PAGE = 20
     def index
