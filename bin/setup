@@ -2,5 +2,6 @@
 
 cp config/application.example.yml config/application.yml
 
+bundle install
 yarn install
 bundle exec rake redmine:plugins:migrate
