@@ -14,7 +14,7 @@ module Gnosis
 
       pr = PullRequest.find_or_initialize_by(url: pull_request_data[:html_url])
       github_updated_at = pull_request_data[:updated_at] && Time.zone.parse(pull_request_data[:updated_at].to_s)
-      return if pr.persisted? && github_updated_at && pr.github_updated_at.present? && github_updated_at <= pr.github_updated_at
+      return if stale_webhook?(pr, github_updated_at)
 
       pr.update!(state: state,
                  url: pull_request_data[:html_url],
@@ -25,6 +25,12 @@ module Gnosis
                  merge_commit_sha: pull_request_data[:merge_commit_sha],
                  github_updated_at: github_updated_at || pr.github_updated_at,
                  issue_id: webhook_params[:issue_id])
+    end
+
+    def self.stale_webhook?(pull_request, github_updated_at)
+      return false unless pull_request.persisted? && github_updated_at && pull_request.github_updated_at.present?
+
+      github_updated_at <= pull_request.github_updated_at
     end
   end
 end
