@@ -16,7 +16,7 @@ module Gnosis
     end
 
     def fetch_repositories
-      client.org_repositories(ENV.fetch('GITHUB_ORGANIZATION_NAME'), type: :private)
+      client.org_repositories(ENV.fetch('GITHUB_ORGANIZATION_NAME'), type: :all)
     end
 
     def fetch_repository_pull_requests(repository)
