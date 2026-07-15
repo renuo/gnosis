@@ -5,6 +5,8 @@ module Gnosis
     belongs_to :issue
     has_many :pull_request_deployments, dependent: :destroy
 
+    validates :url, uniqueness: true
+
     def self.auto_create_or_update(webhook_params)
       pull_request_data = webhook_params[:pull_request]
 

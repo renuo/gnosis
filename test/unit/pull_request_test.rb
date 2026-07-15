@@ -50,6 +50,13 @@ class PullRequestTest < ActiveSupport::TestCase
     assert_equal 'closed', pr.state
   end
 
+  def test_no_duplicate_urls
+    url = 'example.com'
+    FactoryBot.create(:pull_request, url: url)
+
+    assert_raises(ActiveRecord::RecordInvalid) { FactoryBot.create(:pull_request, url: url) }
+  end
+
   def test_out_of_order_webhook_does_not_overwrite_a_newer_state
     Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash) # merged, at LATER
 
