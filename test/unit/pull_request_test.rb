@@ -52,9 +52,9 @@ class PullRequestTest < ActiveSupport::TestCase
 
   def test_no_duplicate_urls
     url = 'example.com'
-    FactoryBot.create(:pull_request, url:)
+    FactoryBot.create(:pull_request, url: url)
 
-    assert_raises(ActiveRecord::RecordInvalid) { FactoryBot.create(:pull_request, url:) }
+    assert_raises(ActiveRecord::RecordInvalid) { FactoryBot.create(:pull_request, url: url) }
   end
 
   def test_out_of_order_webhook_does_not_overwrite_a_newer_state
