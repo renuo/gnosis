@@ -90,9 +90,15 @@ class PullRequestTest < ActiveSupport::TestCase
     Gnosis::PullRequest.auto_create_or_update(draft_hash)
     assert_equal 'draft', Gnosis::PullRequest.last.state
 
-    # The merge happens in the same second as the last draft update, so the
-    # webhook carries the same `updated_at`. It must still be applied.
-    Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash) # merged, at LATER
+    pr_hash = @github_webhook_hash.dup
+    pr_hash[:pull_request] = pr_hash[:pull_request].merge(state: 'closed', draft: false, merged: true,
+                                                          updated_at: LATER)
+
+    # The merge happens in the same second as the last draft update, so both
+    # webhooks carry the same `updated_at`. The merge must still be applied.
+    assert_equal draft_hash[:pull_request][:updated_at], pr_hash[:pull_request][:updated_at]
+
+    Gnosis::PullRequest.auto_create_or_update(pr_hash)
 
     pr = Gnosis::PullRequest.last
     assert_equal 'merged', pr.state
