@@ -28,8 +28,10 @@ module Gnosis
 
       sha_between = fetch_commit_history(repo, first_sha, last_sha)
       create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, passed, time)
-    rescue Octokit::NotFound
-      nil
+    rescue Octokit::NotFound => e
+      Rails.logger.error("[Gnosis::WebhookHandler] Comparison not found for #{repo}: #{e.message}")
+    rescue Octokit::TooManyRequests => e
+      Rails.logger.error("[Gnosis::WebhookHandler] GitHub rate limit exceeded #{repo}: #{e.message}")
     end
 
     private
