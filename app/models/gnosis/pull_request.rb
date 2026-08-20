@@ -16,7 +16,7 @@ module Gnosis
 
       pr = PullRequest.find_or_initialize_by(url: pull_request_data[:html_url])
       github_updated_at = pull_request_data[:updated_at] && Time.zone.parse(pull_request_data[:updated_at].to_s)
-      return if stale_webhook?(pr, github_updated_at)
+      return if stale_webhook?(pr, github_updated_at, merged: pull_request_data[:merged])
 
       pr.update!(state: state,
                  url: pull_request_data[:html_url],
@@ -25,11 +25,14 @@ module Gnosis
                  target_branch: pull_request_data[:base][:ref],
                  was_merged: pull_request_data[:merged],
                  merge_commit_sha: pull_request_data[:merge_commit_sha],
-                 github_updated_at: github_updated_at || pr.github_updated_at,
+                 github_updated_at: [github_updated_at, pr.github_updated_at].compact.max,
                  issue_id: webhook_params[:issue_id])
     end
 
-    def self.stale_webhook?(pull_request, github_updated_at)
+    def self.stale_webhook?(pull_request, github_updated_at, merged: false)
+      # A merge is terminal and authoritative: it must always win, even when it
+      # shares an `updated_at` second with an earlier webhook (e.g. a draft update).
+      return false if merged
       return false unless pull_request.persisted? && github_updated_at && pull_request.github_updated_at.present?
 
       github_updated_at <= pull_request.github_updated_at
