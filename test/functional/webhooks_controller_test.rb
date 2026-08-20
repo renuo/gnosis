@@ -143,4 +143,14 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
     end
     assert @response.status == 200
   end
+
+  def test_deploy_when_github_is_rate_limiting
+    Octokit::Client.any_instance.stubs(:compare).raises(Octokit::TooManyRequests)
+    @request.headers['X-Semaphore-Signature-256'] = 'f88bf226e3fd7cbf28de748adfdd65a4372184d8daac01e2bd2aab1537f9981d'
+    assert_difference('Gnosis::PullRequestDeployment.count', 0) do
+      post :semaphore_webhook_catcher, params: @semaphore_webhook_hash, as: :json
+    end
+    # A 5xx makes Semaphore redeliver, which spends more quota on a request that cannot succeed.
+    assert_equal 200, @response.status
+  end
 end
