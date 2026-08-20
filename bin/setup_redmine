@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Provisions a Redmine checkout for the plugin to run in. Idempotent: an existing
+# checkout, configuration.yml or database.yml is left untouched.
+#
+# Usage: bin/setup_redmine [redmine_version] [target_dir]
+#
+# Dependencies are installed by bin/setup, which links the plugin in first so that
+# PluginGemfile becomes part of the bundle.
+
+require 'fileutils'
+
+REDMINE_REPOSITORY = 'https://github.com/redmine/redmine.git'
+DEFAULT_VERSION = '6.0-stable'
+
+version = ARGV[0] || DEFAULT_VERSION
+plugin_root = File.expand_path('..', __dir__)
+redmine_root = File.expand_path(ARGV[1] || File.join(plugin_root, 'tmp', 'redmine'))
+redmine_rb = File.join(redmine_root, 'lib', 'redmine.rb')
+
+unless File.file?(redmine_rb)
+  warn "Cloning Redmine #{version} into #{redmine_root}..."
+  system('git', 'clone', '--depth', '1', '-b', version, REDMINE_REPOSITORY, redmine_root, exception: true)
+end
+
+abort "#{redmine_root} is not a Redmine checkout." unless File.file?(redmine_rb)
+
+configuration_yml = File.join(redmine_root, 'config', 'configuration.yml')
+FileUtils.cp("#{configuration_yml}.example", configuration_yml) unless File.exist?(configuration_yml)
+
+database_yml = File.join(redmine_root, 'config', 'database.yml')
+File.write(database_yml, DATA.read) unless File.exist?(database_yml)
+
+puts redmine_root
+
+__END__
+# TCP by default: a local socket is not reachable on every setup (containerised
+# PostgreSQL, Postgres.app with a non-default socket dir). No username/password, so
+# libpq keeps honouring PGUSER/PGPASSWORD, as on CI.
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
+
+development:
+  <<: *default
+  database: redmine_development
+
+test:
+  <<: *default
+  database: redmine_test

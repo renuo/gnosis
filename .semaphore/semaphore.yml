@@ -7,10 +7,15 @@ agent:
 blocks:
   - name: Checks
     task:
+      env_vars:
+        - name: PGHOST
+          value: "127.0.0.1"
+        - name: PGUSER
+          value: "postgres"
       jobs:
         - name: Tests
           commands:
-            - bin/test
+            - bin/check
           matrix:
             - env_var: REDMINE_VERSION
               values: ["master", "6.0-stable"]
@@ -23,20 +28,7 @@ blocks:
       prologue:
         commands:
           - sem-version ruby 3.3
-          - 'git clone -b "$REDMINE_VERSION" git@github.com:redmine/redmine.git'
-          - cd redmine
-          - cp config/configuration.yml.example config/configuration.yml
-          - 'git clone git@github.com:aneshodza/redmine-postgres-database-yml.git'
-          - cp redmine-postgres-database-yml/database.yml config/database.yml
-          - rm -rf redmine-postgres-database-yml
-          - bin/bundle install
-          - yarn
-          - sem-service start postgres --username="root" --password=""
-          - 'bin/rails db:create'
-          - 'bin/rails db:migrate'
-          - cd plugins
           - checkout
-          - cd ../../
-          - bin/bundle install
-          - cd plugins/gnosis
+          - sem-service start postgres --username="$PGUSER" --password=""
+          - bin/setup_redmine "$REDMINE_VERSION"
           - bin/setup

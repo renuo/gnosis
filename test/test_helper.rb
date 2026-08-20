@@ -25,8 +25,9 @@ SimpleCov.minimum_coverage 100
 FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
 FactoryBot.find_definitions
 
-# Load the Redmine helper
-require File.expand_path("#{File.dirname(__FILE__)}/../../../test/test_helper")
+# Load the Redmine helper.
+redmine_root = ENV.fetch('REDMINE_ROOT', File.expand_path('../../..', __dir__))
+require File.expand_path('test/test_helper', redmine_root)
 
 # Create seeds
 IssueStatus.create(name: 'To start', default_done_ratio: 0)

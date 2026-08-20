@@ -58,6 +58,20 @@ If you make a deployment, all should correctly work now.
 
 ## Development
 
+```bash
+bin/setup
+bin/check
+```
+
+Gnosis is a Redmine plugin, so it only runs from inside a Redmine installation, at
+`<redmine>/plugins/gnosis`.
+
+If you checked this repository out standalone, `bin/setup` bootstraps a Redmine for you
+under `tmp/redmine` and then symlinks the plugin into its `plugins/` directory and migrates.
+The standalone-command is `bin/setup_redmine <version>`
+
+### Further Work
+
 You may want to add your own webhooks (e.g. if you have a different CI).
 Have a look at [`webhooks_controller_test.rb`](test/functional/webhooks_controller_test.rb) for starters.
 
