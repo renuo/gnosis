@@ -39,6 +39,9 @@ Redmine::Plugin.register :gnosis do
     permission :view_deployments, {
       'gnosis/deployments': [:index]
     }
+    permission :create_release, {
+      'gnosis/releases': %i[new create]
+    }, require: :member
   end
 
   project_module :gnosis do

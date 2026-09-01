@@ -56,6 +56,33 @@ For that you need to set the `GITHUB_ACCESS_TOKEN` env variable. For example you
 
 If you make a deployment, all should correctly work now.
 
+## Releasing from Redmine
+
+The deployments page has a "New release" button that does what `renuo release` does on the command line,
+but through the GitHub API — no SSH key or checkout on the Redmine server.
+
+### Setup
+
+1. Give the project a **Github Repository** project custom field. Both `renuo/my-project` and
+   `https://github.com/renuo/my-project` are accepted; a bare `my-project` is read as `renuo/my-project`.
+2. Grant the "Create releases" permission to the roles that are allowed to deploy.
+3. The existing `GITHUB_ACCESS_TOKEN` needs write access to the repository.
+
+### What the button does
+
+The confirmation page shows everything `develop` adds on top of the default branch — the commit list, the
+number of changed files and a link to the compare view on GitHub (which cannot be embedded, as GitHub sends
+`X-Frame-Options: DENY`). You pick patch, minor, major or a custom version, tick the `*.rb` files whose
+version string should be bumped, and confirm. Gnosis then:
+
+1. commits the version bump to `develop` (one "Bump version" commit, skipped when nothing is ticked),
+2. merges `develop` into the default branch,
+3. creates the annotated tag on the merge commit.
+
+Candidate version files come from GitHub code search plus the conventional `version.rb` paths, and every
+candidate is read back so only files that really contain the current version are offered. At most 20 are
+listed. Deploying late on a Friday asks for one extra confirmation, just like the CLI.
+
 ## Development
 
 You may want to add your own webhooks (e.g. if you have a different CI).

@@ -3,7 +3,7 @@
 module Gnosis
   class WebhookHandler
     def initialize
-      @client = Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN'))
+      @client = GithubClient.build
     end
 
     def handle_github(params)
