@@ -58,17 +58,41 @@ If you make a deployment, all should correctly work now.
 
 ## Development
 
+Choose one of the following ways to install Gnosis.
+
+### Standalone checkout
+
+Clone the repository anywhere, then let `bin/setup` create a Redmine installation
+under `tmp/redmine` and symlink the plugin into it:
+
 ```bash
+git clone git@github.com:renuo/gnosis.git
+cd gnosis
 bin/setup
 bin/check
 ```
 
-Gnosis is a Redmine plugin, so it only runs from inside a Redmine installation, at
-`<redmine>/plugins/gnosis`.
+To bootstrap a specific Redmine version, run `bin/setup` with `REDMINE_VERSION=<branch>`.
+Switching versions later requires removing `tmp/redmine` first.
 
-If you checked this repository out standalone, `bin/setup` bootstraps a Redmine for you
-under `tmp/redmine` and then symlinks the plugin into its `plugins/` directory and migrates.
-The standalone-command is `bin/setup_redmine <version>`
+### Existing Redmine installation
+
+Alternatively, clone Gnosis directly into an existing Redmine installation's
+`plugins/` directory:
+
+```bash
+cd <redmine>/plugins
+git clone git@github.com:renuo/gnosis.git
+cd gnosis
+bin/setup
+bin/check
+```
+
+### Scripts
+
+* `bin/setup` installs dependencies and migrates the development and test databases.
+* `bin/check` runs the plugin tests, `bin/fastcheck` the linters.
+* `bin/run` starts the Redmine server with the plugin loaded.
 
 ### Further Work
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require_relative '../test_helper'
 
 class ZeitwerkComplianceTest < ActiveSupport::TestCase
   test 'eager loads all files without errors' do
@@ -18,7 +18,7 @@ class ZeitwerkComplianceTest < ActiveSupport::TestCase
     Rails.application.config.eager_load = true
     Rails.application.eager_load!
 
-    plugin_root = File.realpath(File.expand_path('..', __dir__))
+    plugin_root = File.realpath(File.expand_path('../..', __dir__))
     source_dirs = %w[app lib].map { |dir| File.join(plugin_root, dir) }
     duplicates = $LOADED_FEATURES
                  .select { |feature| File.exist?(feature) }

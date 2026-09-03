@@ -1,26 +1,14 @@
 #!/bin/bash
 
-PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [ -f "$PLUGIN_ROOT/../../lib/redmine.rb" ]; then
-  REDMINE_ROOT="$(cd "$PLUGIN_ROOT/../.." && pwd)"
-elif [ -f "$PLUGIN_ROOT/tmp/redmine/lib/redmine.rb" ]; then
-  REDMINE_ROOT="$PLUGIN_ROOT/tmp/redmine"
-else
-  echo "No Redmine installation found around $PLUGIN_ROOT. Run bin/setup first." >&2
-  exit 1
-fi
-
-export REDMINE_ROOT
-export BUNDLE_GEMFILE="$REDMINE_ROOT/Gemfile"
-cd "$REDMINE_ROOT"
+source "$(dirname "${BASH_SOURCE[0]}")/support/redmine_env"
+ensure_redmine
+cd "$REDMINE_ROOT" || exit 1
 
 white='\033[1;37m'
 red='\033[0;31m'
 green='\033[0;32m'
 
-bundle exec rake redmine:plugins:test NAME=gnosis
-
-if [[ $? -eq 0 ]]; then
+if bundle exec rake redmine:plugins:test NAME=gnosis; then
   echo -n -e ${green}
   echo "----------------------------------------"
   echo "Tests passed"

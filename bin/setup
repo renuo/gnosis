@@ -3,38 +3,27 @@ set -euo pipefail
 
 # Installs the plugin into a Redmine. If this checkout does not already sit at
 # <redmine>/plugins/gnosis, bin/setup_redmine provisions one in tmp/redmine and the
-# plugin is symlinked into it.
+# plugin is symlinked into it. REDMINE_VERSION selects the Redmine branch to clone.
 
-PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$(dirname "${BASH_SOURCE[0]}")/support/redmine_env"
 
 [ -f "$PLUGIN_ROOT/config/application.yml" ] ||
   cp "$PLUGIN_ROOT/config/application.example.yml" "$PLUGIN_ROOT/config/application.yml"
 
-if [ -f "$PLUGIN_ROOT/../../lib/redmine.rb" ]; then
-  REDMINE_ROOT="$(cd "$PLUGIN_ROOT/../.." && pwd)"
-  BOOTSTRAPPED=false
-else
-  REDMINE_ROOT="$("$PLUGIN_ROOT/bin/setup_redmine" | tail -1)"
-  BOOTSTRAPPED=true
-  ln -sfn "$PLUGIN_ROOT" "$REDMINE_ROOT/plugins/gnosis"
-fi
+"$PLUGIN_ROOT/bin/setup_redmine" "${REDMINE_VERSION:-}" "$REDMINE_ROOT" > /dev/null
 
-export BUNDLE_GEMFILE="$REDMINE_ROOT/Gemfile"
+[ "$REDMINE_ROOT" != "$PLUGIN_ROOT/tmp/redmine" ] ||
+  ln -sfn "$PLUGIN_ROOT" "$REDMINE_ROOT/plugins/gnosis"
+
 cd "$REDMINE_ROOT"
 
 bundle install
 yarn install
 
-if [ "$BOOTSTRAPPED" = true ]; then
-  bundle exec rake generate_secret_token
-  bundle exec rake db:create db:migrate
-fi
-
+bundle exec rake generate_secret_token
+bundle exec rake db:create db:migrate
 # Also dumps the plugin tables into db/schema.rb, which db:test:prepare loads.
 bundle exec rake redmine:plugins:migrate
-
-if [ "$BOOTSTRAPPED" = true ]; then
-  bundle exec rake db:test:prepare
-fi
+bundle exec rake db:test:prepare
 
 echo "Setup complete. Redmine root: $REDMINE_ROOT"

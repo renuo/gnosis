@@ -30,5 +30,4 @@ blocks:
           - sem-version ruby 3.3
           - checkout
           - sem-service start postgres --username="$PGUSER" --password=""
-          - bin/setup_redmine "$REDMINE_VERSION"
           - bin/setup

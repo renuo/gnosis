@@ -1,0 +1,20 @@
+# shellcheck shell=bash
+# Sourced by the bin/ scripts. Locates the Redmine the plugin runs in: the checkout
+# around <redmine>/plugins/gnosis, or otherwise the one bin/setup bootstraps in tmp/redmine.
+
+PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+if [ -f "$PLUGIN_ROOT/../../lib/redmine.rb" ]; then
+  REDMINE_ROOT="$(cd "$PLUGIN_ROOT/../.." && pwd)"
+else
+  REDMINE_ROOT="$PLUGIN_ROOT/tmp/redmine"
+fi
+
+export PLUGIN_ROOT REDMINE_ROOT
+export BUNDLE_GEMFILE="$REDMINE_ROOT/Gemfile"
+
+ensure_redmine() {
+  [ -f "$REDMINE_ROOT/lib/redmine.rb" ] && return
+  echo "No Redmine installation found at $REDMINE_ROOT. Run bin/setup first." >&2
+  exit 1
+}

@@ -5,6 +5,7 @@
 # checkout, configuration.yml or database.yml is left untouched.
 #
 # Usage: bin/setup_redmine [redmine_version] [target_dir]
+# The version falls back to REDMINE_VERSION, then to 6.0-stable.
 #
 # Dependencies are installed by bin/setup, which links the plugin in first so that
 # PluginGemfile becomes part of the bundle.
@@ -14,7 +15,8 @@ require 'fileutils'
 REDMINE_REPOSITORY = 'https://github.com/redmine/redmine.git'
 DEFAULT_VERSION = '6.0-stable'
 
-version = ARGV[0] || DEFAULT_VERSION
+requested_version = [ARGV[0], ENV.fetch('REDMINE_VERSION', nil)].find { |v| v && !v.empty? }
+version = requested_version || DEFAULT_VERSION
 plugin_root = File.expand_path('..', __dir__)
 redmine_root = File.expand_path(ARGV[1] || File.join(plugin_root, 'tmp', 'redmine'))
 redmine_rb = File.join(redmine_root, 'lib', 'redmine.rb')
@@ -25,6 +27,11 @@ unless File.file?(redmine_rb)
 end
 
 abort "#{redmine_root} is not a Redmine checkout." unless File.file?(redmine_rb)
+
+checked_out = IO.popen(['git', '-C', redmine_root, 'rev-parse', '--abbrev-ref', 'HEAD'], err: File::NULL, &:read).strip
+if requested_version && !checked_out.empty? && checked_out != requested_version
+  warn "#{redmine_root} is on #{checked_out}, not #{requested_version}. Remove it to switch."
+end
 
 configuration_yml = File.join(redmine_root, 'config', 'configuration.yml')
 FileUtils.cp("#{configuration_yml}.example", configuration_yml) unless File.exist?(configuration_yml)
