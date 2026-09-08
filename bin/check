@@ -21,12 +21,16 @@ green='\033[0;32m'
 bundle exec rake redmine:plugins:test NAME=gnosis
 
 if [[ $? -eq 0 ]]; then
-  echo -e "${green}----------------------------------------"
-  echo -e "Tests passed"
-  echo -e "----------------------------------------${white}"
+  echo -n -e ${green}
+  echo "----------------------------------------"
+  echo "Tests passed"
+  echo "----------------------------------------"
+  echo -n -e ${white}
 else
-  echo -e "${red}----------------------------------------"
-  echo -e "Tests failed"
-  echo -e "----------------------------------------${white}"
+  echo -n -e ${red}
+  echo "----------------------------------------"
+  echo "Tests failed"
+  echo "----------------------------------------"
+  echo -n -e ${white}
   exit 1
 fi
