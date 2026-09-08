@@ -3,14 +3,17 @@ set -euo pipefail
 
 # Installs the plugin into a Redmine. If this checkout does not already sit at
 # <redmine>/plugins/gnosis, bin/setup_redmine provisions one in tmp/redmine and the
-# plugin is symlinked into it. REDMINE_VERSION selects the Redmine branch to clone.
+# plugin is symlinked into it.
+#
+# Usage: bin/setup [redmine_version]
+# The version falls back to REDMINE_VERSION, then to the bin/setup_redmine default.
 
 source "$(dirname "${BASH_SOURCE[0]}")/support/redmine_env"
 
 [ -f "$PLUGIN_ROOT/config/application.yml" ] ||
   cp "$PLUGIN_ROOT/config/application.example.yml" "$PLUGIN_ROOT/config/application.yml"
 
-"$PLUGIN_ROOT/bin/setup_redmine" "${REDMINE_VERSION:-}" "$REDMINE_ROOT" > /dev/null
+"$PLUGIN_ROOT/bin/setup_redmine" "${1:-${REDMINE_VERSION:-}}" "$REDMINE_ROOT" > /dev/null
 
 [ "$REDMINE_ROOT" != "$PLUGIN_ROOT/tmp/redmine" ] ||
   ln -sfn "$PLUGIN_ROOT" "$REDMINE_ROOT/plugins/gnosis"

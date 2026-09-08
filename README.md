@@ -72,7 +72,7 @@ bin/setup
 bin/check
 ```
 
-To bootstrap a specific Redmine version, run `bin/setup` with `REDMINE_VERSION=<branch>`.
+To bootstrap a specific Redmine version, run `bin/setup <branch>` (or set `REDMINE_VERSION`).
 Switching versions later requires removing `tmp/redmine` first.
 
 ### Existing Redmine installation

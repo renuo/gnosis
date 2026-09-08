@@ -12,22 +12,20 @@ blocks:
           value: "127.0.0.1"
         - name: PGUSER
           value: "postgres"
+      prologue:
+        commands:
+          - sem-version ruby 3.3
+          - checkout
+          - sem-service start postgres --username="$PGUSER" --password=""
       jobs:
         - name: Tests
           commands:
+            - bin/setup "$REDMINE_VERSION"
             - bin/check
           matrix:
             - env_var: REDMINE_VERSION
               values: ["master", "6.0-stable"]
         - name: Linter
           commands:
+            - bin/setup 6.0-stable
             - bin/fastcheck
-          env_vars:
-            - name: REDMINE_VERSION
-              value: "6.0-stable"
-      prologue:
-        commands:
-          - sem-version ruby 3.3
-          - checkout
-          - sem-service start postgres --username="$PGUSER" --password=""
-          - bin/setup
