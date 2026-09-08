@@ -98,5 +98,5 @@ end
 puts <<~SUMMARY
   Seeded #{issues.size} tickets, #{pull_requests.size} pull requests and
   #{Gnosis::PullRequestDeployment.count} deployments in project "#{project.name}".
-  Log in as #{LOGIN} / #{PASSWORD} (or admin / admin) and open /projects/#{project.identifier}/issues.
+  Log in as #{LOGIN} : #{PASSWORD} (or admin : admin) and open /projects/#{project.identifier}/issues.
 SUMMARY
