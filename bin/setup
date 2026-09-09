@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Installs the plugin into a Redmine. If this checkout does not already sit at
 # <redmine>/plugins/gnosis, bin/setup_redmine provisions one in tmp/redmine and the
-# plugin is symlinked into it.
+# plugin is symlinked into it and db/seeds.rb fills it with development data.
 #
 # Usage: bin/setup [redmine_version]
 # The version falls back to REDMINE_VERSION, then to the bin/setup_redmine default.
@@ -28,5 +28,9 @@ bundle exec rake db:create db:migrate
 # Also dumps the plugin tables into db/schema.rb, which db:test:prepare loads.
 bundle exec rake redmine:plugins:migrate
 bundle exec rake db:test:prepare
+
+# A bootstrapped Redmine is only ever a development one, so give it something to look at.
+[ "$REDMINE_ROOT" != "$PLUGIN_ROOT/tmp/redmine" ] ||
+  bundle exec rails runner "$PLUGIN_ROOT/db/seeds.rb"
 
 echo "Setup complete. Redmine root: $REDMINE_ROOT"

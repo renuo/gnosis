@@ -193,3 +193,8 @@ Style/Documentation:
 
 Rails/CreateTableWithTimestamps:
   Enabled: false
+
+# Seed scripts report what they seeded on the terminal.
+Rails/Output:
+  Exclude:
+    - 'db/seeds.rb'
