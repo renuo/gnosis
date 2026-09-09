@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+source "$(dirname "${BASH_SOURCE[0]}")/support/redmine_env"
+ensure_redmine
+cd "$REDMINE_ROOT"
+
+exec bin/rails server "$@"

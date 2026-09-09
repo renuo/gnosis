@@ -58,6 +58,44 @@ If you make a deployment, all should correctly work now.
 
 ## Development
 
+Choose one of the following ways to install Gnosis.
+
+### Standalone checkout
+
+Clone the repository anywhere, then let `bin/setup` create a Redmine installation
+under `tmp/redmine` and symlink the plugin into it:
+
+```bash
+git clone git@github.com:renuo/gnosis.git
+cd gnosis
+bin/setup
+bin/check
+```
+
+To bootstrap a specific Redmine version, run `bin/setup <branch>` (or set `REDMINE_VERSION`).
+Switching versions later requires removing `tmp/redmine` first.
+
+### Existing Redmine installation
+
+Alternatively, clone Gnosis directly into an existing Redmine installation's
+`plugins/` directory:
+
+```bash
+cd <redmine>/plugins
+git clone git@github.com:renuo/gnosis.git
+cd gnosis
+bin/setup
+bin/check
+```
+
+### Scripts
+
+* `bin/setup` installs dependencies and migrates the development and test databases.
+* `bin/check` runs the plugin tests, `bin/fastcheck` the linters.
+* `bin/run` starts the Redmine server with the plugin loaded.
+
+### Further Work
+
 You may want to add your own webhooks (e.g. if you have a different CI).
 Have a look at [`webhooks_controller_test.rb`](test/functional/webhooks_controller_test.rb) for starters.
 

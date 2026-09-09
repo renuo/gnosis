@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Provisions a Redmine checkout for the plugin to run in. Idempotent: an existing
+# checkout, configuration.yml or database.yml is left untouched. Fails instead of
+# silently keeping a checkout that is not on the requested version.
+#
+# Usage: bin/setup_redmine [redmine_version] [target_dir]
+# The version falls back to REDMINE_VERSION, then to 6.0-stable.
+#
+# Dependencies are installed by bin/setup, which links the plugin in first so that
+# PluginGemfile becomes part of the bundle.
+
+require 'fileutils'
+
+REDMINE_REPOSITORY = 'https://github.com/redmine/redmine.git'
+DEFAULT_VERSION = '6.0-stable'
+
+requested_version = [ARGV[0], ENV.fetch('REDMINE_VERSION', nil)].find { |v| v && !v.empty? }
+version = requested_version || DEFAULT_VERSION
+plugin_root = File.expand_path('..', __dir__)
+redmine_root = File.expand_path(ARGV[1] || File.join(plugin_root, 'tmp', 'redmine'))
+redmine_rb = File.join(redmine_root, 'lib', 'redmine.rb')
+
+def git(redmine_root, *args)
+  IO.popen(['git', '-C', redmine_root, *args], err: File::NULL, &:read).strip
+end
+
+unless File.file?(redmine_rb)
+  if Dir.exist?(redmine_root) && !Dir.empty?(redmine_root)
+    abort "#{redmine_root} exists but is not a Redmine checkout. Remove it or pass another target directory."
+  end
+  warn "Cloning Redmine #{version} into #{redmine_root}..."
+  system('git', 'clone', '--depth', '1', '-b', version, REDMINE_REPOSITORY, redmine_root) ||
+    abort("Cloning Redmine #{version} failed.")
+end
+
+abort "#{redmine_root} is not a Redmine checkout." unless File.file?(redmine_rb)
+
+# A tag checkout leaves HEAD detached, so branch names cannot be compared; commits can.
+head = git(redmine_root, 'rev-parse', '--verify', '-q', 'HEAD^{commit}')
+if requested_version && !head.empty?
+  requested = [requested_version, "origin/#{requested_version}"]
+              .map { |ref| git(redmine_root, 'rev-parse', '--verify', '-q', "#{ref}^{commit}") }
+  unless requested.include?(head)
+    abort "#{redmine_root} is on #{git(redmine_root, 'rev-parse', '--abbrev-ref', 'HEAD')} (#{head[0, 7]}), " \
+          "not #{requested_version}. Remove it to switch."
+  end
+end
+
+configuration_yml = File.join(redmine_root, 'config', 'configuration.yml')
+FileUtils.cp("#{configuration_yml}.example", configuration_yml) unless File.exist?(configuration_yml)
+
+database_yml = File.join(redmine_root, 'config', 'database.yml')
+File.write(database_yml, DATA.read) unless File.exist?(database_yml)
+
+puts redmine_root
+
+__END__
+# TCP by default: a local socket is not reachable on every setup (containerised
+# PostgreSQL, Postgres.app with a non-default socket dir). No username/password, so
+# libpq keeps honouring PGUSER/PGPASSWORD, as on CI.
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
+
+development:
+  <<: *default
+  database: redmine_development
+
+test:
+  <<: *default
+  database: redmine_test

@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 require 'redmine'
-require_relative 'lib/issue_details_hook_listener'
+# Zeitwerk autoloads this listener through the plugin directory, which may be a symlink.
+# `require_relative` would start loading the file under the resolved path, and its
+# `class` line would fire the still-pending autoload, requiring the file again through
+# the symlink. Ruby only deduplicates finished loads, so the body would run twice.
+# Requiring the same path Zeitwerk uses keeps it at one load.
+require File.expand_path('lib/issue_details_hook_listener', File.dirname(__FILE__))
 
 def check_env
   ENV['GITHUB_WEBHOOK_SECRET'].present? ||
