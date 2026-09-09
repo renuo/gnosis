@@ -12,7 +12,8 @@ class ZeitwerkComplianceTest < ActiveSupport::TestCase
   end
 
   # The plugin directory is a symlink in development setups. Reaching a file through
-  # both the symlink and its resolved path executes its body twice.
+  # both the symlink and its resolved path executes its body twice. Guards the
+  # `require` in init.rb; stays as long as that does.
   test 'loads each plugin file under a single path' do
     original_eager_load = Rails.application.config.eager_load
     Rails.application.config.eager_load = true
