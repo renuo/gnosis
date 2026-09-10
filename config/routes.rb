@@ -13,4 +13,5 @@ end
 
 resources :projects do
   get 'gnosis/deployments', to: 'gnosis/deployments#index', as: :gnosis_deployments
+  resources :gnosis_releases, only: %i[new create], controller: 'gnosis/releases', path: 'gnosis/releases'
 end

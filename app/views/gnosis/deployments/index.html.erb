@@ -2,6 +2,12 @@
   <%= stylesheet_link_tag 'gnosis_deployments', plugin: 'gnosis' %>
 <% end %>
 
+<div class="contextual">
+  <% if @repository && User.current.allowed_to?(:create_release, @project) %>
+    <%= link_to l(:label_gnosis_new_release), new_project_gnosis_release_path(@project), class: "icon icon-add" %>
+  <% end %>
+</div>
+
 <h2>Deployments (main)</h2>
 
 <% if @grouped_deployments.empty? %>

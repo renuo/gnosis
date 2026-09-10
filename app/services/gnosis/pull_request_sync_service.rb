@@ -24,7 +24,7 @@ module Gnosis
     end
 
     def client
-      @client ||= Octokit::Client.new(access_token: ENV.fetch('GITHUB_ACCESS_TOKEN'), auto_paginate: true)
+      @client ||= GithubClient.build(auto_paginate: true)
     end
   end
 end
