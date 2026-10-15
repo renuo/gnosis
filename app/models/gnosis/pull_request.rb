@@ -40,7 +40,6 @@ module Gnosis
                  issue_id: webhook_params[:issue_id])
     end
 
-    # The URL index is the only unique constraint on this table.
     def self.url_taken?(error)
       error.is_a?(ActiveRecord::RecordNotUnique) || error.record.errors.of_kind?(:url, :taken)
     end
