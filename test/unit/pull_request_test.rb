@@ -57,6 +57,28 @@ class PullRequestTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) { FactoryBot.create(:pull_request, url: url) }
   end
 
+  def test_concurrent_creation_caught_by_validation_updates_the_existing_record
+    existing = create_concurrently_created_pull_request
+
+    assert_difference('Gnosis::PullRequest.count', 0) do
+      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash)
+    end
+
+    assert_equal 'merged', existing.reload.state
+  end
+
+  def test_concurrent_creation_caught_by_unique_index_updates_the_existing_record
+    existing = create_concurrently_created_pull_request
+    # The concurrent request commits after our uniqueness validation ran.
+    Gnosis::PullRequest.any_instance.stubs(:valid?).returns(true)
+
+    assert_difference('Gnosis::PullRequest.count', 0) do
+      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash)
+    end
+
+    assert_equal 'merged', existing.reload.state
+  end
+
   def test_out_of_order_webhook_does_not_overwrite_a_newer_state
     Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash) # merged, at LATER
 
@@ -113,5 +135,17 @@ class PullRequestTest < ActiveSupport::TestCase
 
     pr = Gnosis::PullRequest.find_by(url: webhook_hash[:pull_request][:html_url])
     assert_equal 'closed', pr.state
+  end
+
+  private
+
+  # Simulates a concurrent webhook inserting the PR right after our lookup
+  # found nothing: the first lookup misses, a retried lookup finds the record.
+  def create_concurrently_created_pull_request
+    url = @github_webhook_hash[:pull_request][:html_url]
+    existing = FactoryBot.create(:pull_request, url: url, state: 'open', github_updated_at: EARLIER)
+    Gnosis::PullRequest.stubs(:find_or_initialize_by).with(url: url)
+                       .returns(Gnosis::PullRequest.new(url: url)).then.returns(existing)
+    existing
   end
 end
