@@ -1,0 +1,118 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'gnosis_deployments', plugin: 'gnosis' %>
+<% end %>
+
+<h2><%= l(:label_gnosis_new_release) %></h2>
+
+<p class="release-repository">
+  <%= link_to @repository.full_name, @repository.url, target: '_blank', rel: 'noopener' %>
+  <span class="release-branches"><%= @preview.develop_branch %> &rarr; <%= @preview.main_branch %></span>
+</p>
+
+<%= form_tag project_gnosis_releases_path(@project), class: 'release-form' do %>
+  <div class="deployment-card">
+    <div class="deployment-card-header">
+      <%= l(:label_gnosis_changes_to_release) %>
+      <span class="release-summary">
+        <%= l(:label_gnosis_commit_count, count: @preview.commits.size) %> &middot;
+        <%= l(:label_gnosis_file_count, count: @preview.changed_files.size) %>
+      </span>
+      <%= link_to l(:label_gnosis_open_compare_on_github), @preview.compare_url,
+                  target: '_blank', rel: 'noopener', class: 'release-compare-link' %>
+    </div>
+
+    <% if @preview.changes? %>
+      <table class="list release-commits">
+        <thead>
+          <tr>
+            <th><%= l(:label_gnosis_commit) %></th>
+            <th class="release-commit-author"><%= l(:field_author) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @preview.commits.each do |commit| %>
+            <tr class="<%= cycle('odd', 'even', name: 'commits') %>">
+              <td>
+                <%= link_to commit.sha.first(7), commit.html_url, target: '_blank',
+                            rel: 'noopener', class: 'release-sha' %>
+                <%= h commit.commit.message.lines.first.to_s.strip %>
+              </td>
+              <td class="release-commit-author"><%= h commit.commit.author.name %></td>
+            </tr>
+          <% end %>
+          <% reset_cycle('commits') %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="nodata"><%= l(:label_gnosis_nothing_to_release, branch: @preview.develop_branch) %></p>
+    <% end %>
+  </div>
+
+  <div class="deployment-card">
+    <div class="deployment-card-header"><%= l(:label_gnosis_version) %></div>
+    <div class="release-card-body">
+      <p class="release-current-version">
+        <%= l(:label_gnosis_current_version) %>
+        <strong><%= @preview.released_before? ? @preview.current_version : l(:label_gnosis_no_tag_yet) %></strong>
+      </p>
+
+      <ul class="release-update-types">
+        <% Gnosis::ReleaseVersion::UPDATE_TYPES.each do |update_type| %>
+          <li>
+            <%= radio_button_tag :update_type, update_type, @update_type == update_type %>
+            <label for="update_type_<%= update_type %>">
+              <%= l("label_gnosis_update_type_#{update_type}") %>
+            </label>
+            <% if update_type == 'custom' %>
+              <%= text_field_tag :custom_version, params[:custom_version],
+                                 placeholder: '1.2.3', size: 10, class: 'release-custom-version' %>
+            <% else %>
+              <span class="release-next-version"><%= @preview.current_version.bump(update_type) %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <% if @preview.version_files.any? %>
+    <div class="deployment-card">
+      <div class="deployment-card-header"><%= l(:label_gnosis_version_files) %></div>
+      <div class="release-card-body">
+        <p class="release-hint"><%= l(:label_gnosis_version_files_hint, version: @preview.current_version) %></p>
+        <ul class="release-version-files">
+          <% @preview.version_files.each do |version_file| %>
+            <% checkbox_id = "version_file_#{version_file.path.parameterize}" %>
+            <li>
+              <%= check_box_tag 'version_files[]', version_file.path,
+                                @selected_version_files.include?(version_file.path), id: checkbox_id %>
+              <label for="<%= checkbox_id %>"><code><%= version_file.path %></code></label>
+              <pre class="release-version-file-lines"><%= version_file.matching_lines.join("\n") %></pre>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="deployment-card release-confirmation">
+    <div class="release-card-body">
+      <p>
+        <%= check_box_tag :reviewed, '1', params[:reviewed] == '1' %>
+        <label for="reviewed"><%= l(:label_gnosis_reviewed_changes) %></label>
+      </p>
+
+      <% if late_friday? %>
+        <p class="release-friday-warning">
+          <%= check_box_tag :friday_confirmed, '1', params[:friday_confirmed] == '1' %>
+          <label for="friday_confirmed"><%= l(:label_gnosis_friday_confirmation) %></label>
+        </p>
+      <% end %>
+
+      <p class="buttons">
+        <%= submit_tag l(:button_gnosis_release), class: 'release-submit', disabled: !@preview.changes? %>
+        <%= link_to l(:button_cancel), project_gnosis_deployments_path(@project) %>
+      </p>
+    </div>
+  </div>
+<% end %>
