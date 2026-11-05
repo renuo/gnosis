@@ -137,18 +137,6 @@ class PullRequestTest < ActiveSupport::TestCase
     assert_equal 'closed', pr.state
   end
 
-  private
-
-  # Simulates a concurrent webhook inserting the PR right after our lookup
-  # found nothing: the first lookup misses, a retried lookup finds the record.
-  def create_concurrently_created_pull_request
-    url = @github_webhook_hash[:pull_request][:html_url]
-    existing = FactoryBot.create(:pull_request, url: url, state: 'open', github_updated_at: EARLIER)
-    Gnosis::PullRequest.stubs(:find_or_initialize_by).with(url: url)
-                       .returns(Gnosis::PullRequest.new(url: url)).then.returns(existing)
-    existing
-  end
-
   def test_stores_the_repository_of_its_url
     pr = FactoryBot.create(:pull_request, url: 'https://github.com/Renuo/Gnosis/pull/57')
 
@@ -159,5 +147,17 @@ class PullRequestTest < ActiveSupport::TestCase
     pr = FactoryBot.create(:pull_request, url: 'example.com/1')
 
     assert_nil pr.repository
+  end
+
+  private
+
+  # Simulates a concurrent webhook inserting the PR right after our lookup
+  # found nothing: the first lookup misses, a retried lookup finds the record.
+  def create_concurrently_created_pull_request
+    url = @github_webhook_hash[:pull_request][:html_url]
+    existing = FactoryBot.create(:pull_request, url: url, state: 'open', github_updated_at: EARLIER)
+    Gnosis::PullRequest.stubs(:find_or_initialize_by).with(url: url)
+                       .returns(Gnosis::PullRequest.new(url: url)).then.returns(existing)
+    existing
   end
 end

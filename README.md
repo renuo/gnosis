@@ -76,7 +76,7 @@ bin/run
 To bootstrap a specific Redmine version, run `bin/setup <branch>` (or set `REDMINE_VERSION`).
 Switching versions later requires removing `tmp/redmine` first.
 
-Visit http://redmine.localhost:3000 and login with `developer:gnosisdev` or `admin:admin`.
+Visit http://redmine.localhost:3000 and login with `developer:gnosisdeveloper` or `admin:admin`.
 
 ### Existing Redmine installation
 

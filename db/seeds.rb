@@ -7,7 +7,7 @@
 abort "Refusing to seed the #{Rails.env} database, development only." unless Rails.env.development?
 
 LOGIN = 'developer'
-PASSWORD = 'gnosisdev'
+PASSWORD = 'gnosisdeveloper'
 
 Redmine::DefaultData::Loader.load('en') if Redmine::DefaultData::Loader.no_data?
 
