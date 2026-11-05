@@ -78,4 +78,68 @@ class DeploymentsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select 'p.nodata', text: 'No deployments found for this project.'
   end
+
+  def test_index_lists_a_deployment_without_any_ticket
+    deployment = FactoryBot.create(:deployment, repository: @pr.repository, ci_date: 1.hour.from_now)
+    commit = FactoryBot.create(:deployment_commit, deployment: deployment, message: 'Bump rails from 8.0.1 to 8.0.2')
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 2
+    assert_select '.deployment-no-ticket', text: 'No ticket'
+    assert_select '.deployment-commit a[href=?]', "https://github.com/#{@pr.repository}/commit/#{commit.sha}",
+                  text: /Bump rails from 8\.0\.1 to 8\.0\.2/
+  end
+
+  def test_index_lists_ticketed_and_untracked_changes_of_the_same_deployment
+    deployment = Gnosis::Deployment.find_by!(url: @deployment_main.url)
+    FactoryBot.create(:deployment_commit, deployment: deployment, sha: @pr.merge_commit_sha, message: 'Ticketed change')
+    FactoryBot.create(:deployment_commit, deployment: deployment, message: 'Untracked change')
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 1
+    assert_select 'a[href=?]', @pr.url
+    assert_select '.deployment-commit', 1
+    assert_select '.deployment-commit', text: /Untracked change/
+  end
+
+  def test_index_matches_a_pull_request_merged_after_the_deployment_arrived
+    deployment = FactoryBot.create(:deployment, repository: @pr.repository)
+    FactoryBot.create(:deployment_commit, deployment: deployment, sha: 'late_sha')
+    late_pr = FactoryBot.create(:pull_request, issue_id: 2, merge_commit_sha: 'late_sha', title: 'Merged late')
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-pr-title a[href=?]', late_pr.url
+    assert_select '.deployment-commit', 0
+  end
+
+  def test_index_shows_a_deployment_without_change_details
+    FactoryBot.create(:deployment, repository: @pr.repository)
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 2
+    assert_select '.deployment-no-ticket', text: 'No change details available.'
+  end
+
+  def test_index_ignores_deployments_of_repositories_outside_the_project
+    FactoryBot.create(:deployment, repository: 'renuo/unrelated')
+    FactoryBot.create(:deployment, repository: nil)
+    FactoryBot.create(:deployment, repository: @pr.repository, deploy_branch: 'staging')
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 1
+  end
+
+  def test_index_paginates_deployments
+    FactoryBot.create_list(:deployment, Gnosis::DeploymentsController::DEPLOYMENTS_PER_PAGE,
+                           repository: @pr.repository, ci_date: 1.day.ago)
+
+    get :index, params: { project_id: @project.identifier, page: 2 }
+    assert_response :success
+    assert_select '.deployment-card', 1
+  end
 end

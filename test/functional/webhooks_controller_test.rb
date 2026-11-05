@@ -6,14 +6,12 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
   def setup
     @controller = Gnosis::WebhooksController.new
 
-    commit = Struct.new(:sha)
+    commit = Struct.new(:sha, :commit)
     comparison_result_struct = Struct.new(:commits)
 
-    comparison_result = comparison_result_struct.new([
-                                                       commit.new('another_hash'),
-                                                       commit.new('in_between_hash'),
-                                                       commit.new('one_hash')
-                                                     ])
+    comparison_result = comparison_result_struct.new(
+      %w[another_hash in_between_hash one_hash].map { |sha| commit.new(sha, { message: "Commit #{sha}" }) }
+    )
 
     Octokit::Client.any_instance.stubs(:compare).returns(comparison_result)
 

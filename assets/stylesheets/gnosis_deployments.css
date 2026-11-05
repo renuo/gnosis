@@ -10,6 +10,12 @@
     border-bottom: 1px solid #d7d7d7;
     font-size: 1.1em;
     font-weight: bold;
+
+    .deployment-repository {
+      float: right;
+      font-weight: normal;
+      color: #888;
+    }
   }
 
   table.list {
@@ -38,5 +44,16 @@
     white-space: nowrap;
     vertical-align: top;
     border-left: 1px solid #eee;
+  }
+
+  .deployment-no-ticket,
+  .deployment-hidden-ticket {
+    color: #888;
+    font-style: italic;
+  }
+
+  .deployment-commit code {
+    color: #888;
+    margin-right: 4px;
   }
 }

@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :pull_request, class: 'Gnosis::PullRequest' do
     state { %w[open close merged].sample }
-    sequence(:url) { |n| "example.com/#{n}" }
+    sequence(:url) { |n| "https://github.com/renuo/example/pull/#{n}" }
     title { 'some pr' }
     source_branch { 'some other pr' }
     target_branch { 'main' }

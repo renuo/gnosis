@@ -49,6 +49,7 @@ class DeploymentsPageTest < GnosisSystemTest
 
   def test_empty_deployments
     Gnosis::PullRequestDeployment.destroy_all
+    Gnosis::Deployment.destroy_all
     visit "projects/#{@project.identifier}/gnosis/deployments"
     assert page.has_content?('No deployments found for this project.')
   end

@@ -25,9 +25,14 @@ module Gnosis
       workflow_id = params[:workflow][:id]
 
       first_sha, last_sha = range.split('...')
+      url = semaphore_url(org, workflow_id)
 
-      sha_between = fetch_commit_history(repo, first_sha, last_sha)
-      create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, passed, time)
+      deployment = Deployment.record(url: url, branch: branch, repository: repo, has_passed: passed,
+                                     ci_date: Time.zone.parse(time))
+
+      commits = fetch_commits(repo, first_sha, last_sha)
+      deployment.record_commits(commits)
+      create_deploys_for_pull_requests(url, commits.map(&:first), branch, passed, time)
     rescue Octokit::NotFound => e
       Rails.logger.error("[Gnosis::WebhookHandler] Comparison not found for #{repo}: #{e.message}")
     rescue Octokit::TooManyRequests => e
@@ -45,9 +50,10 @@ module Gnosis
       end
     end
 
-    def fetch_commit_history(repo, first_commit, last_commit)
+    # [sha, message] pairs of the commits between the two revisions, oldest first.
+    def fetch_commits(repo, first_commit, last_commit)
       comparison = @client.compare(repo, first_commit, last_commit)
-      comparison.commits.pluck(:sha)
+      comparison.commits.map { |commit| [commit[:sha], commit[:commit][:message]] }
     end
 
     def semaphore_url(org, workflow_id)

@@ -42,10 +42,11 @@ class WebhookHandlerTest < ActiveSupport::TestCase
       }
     }
 
-    commit = Struct.new(:sha)
+    commit = Struct.new(:sha, :commit)
     comparison = Struct.new(:commits)
     Octokit::Client.any_instance.stubs(:compare).returns(
-      comparison.new([commit.new('one_hash'), commit.new('another_hash')])
+      comparison.new([commit.new('one_hash', { message: "Merge the feature\n\nLonger description" }),
+                      commit.new('another_hash', { message: 'Bump rails from 8.0.1 to 8.0.2 (#12)' })])
     )
 
     @pull_request = FactoryBot.create(:pull_request, merge_commit_sha: 'one_hash')
@@ -115,5 +116,58 @@ class WebhookHandlerTest < ActiveSupport::TestCase
     assert_no_difference('Gnosis::PullRequestDeployment.count') do
       assert_nothing_raised { Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash) }
     end
+  end
+
+  def test_handle_semaphore_records_the_deployment
+    assert_difference('Gnosis::Deployment.count', 1) do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+
+    deployment = Gnosis::Deployment.last
+    assert_equal 'https://aneshodza.semaphoreci.com/workflows/5432cce0-196d-4898-9385-c1d670e4a9e9/', deployment.url
+    assert_equal 'aneshodza/test-repo', deployment.repository
+    assert_equal 'main', deployment.deploy_branch
+    assert deployment.has_passed
+    assert_equal Time.zone.parse('2021-03-03T12:00:00Z'), deployment.ci_date
+  end
+
+  def test_handle_semaphore_records_the_first_line_of_each_commit_message
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    commits = Gnosis::Deployment.last.commits.map { |commit| [commit.sha, commit.message] }
+    assert_equal [['one_hash', 'Merge the feature'], ['another_hash', 'Bump rails from 8.0.1 to 8.0.2 (#12)']], commits
+  end
+
+  def test_handle_semaphore_records_a_deployment_without_any_ticket
+    Gnosis::PullRequest.destroy_all
+
+    assert_difference('Gnosis::Deployment.count', 1) do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+    assert_equal 2, Gnosis::Deployment.last.commits.count
+  end
+
+  def test_handle_semaphore_redelivery_does_not_duplicate_the_deployment
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert_no_difference(['Gnosis::Deployment.count', 'Gnosis::DeploymentCommit.count']) do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+  end
+
+  def test_handle_semaphore_normalizes_the_repository_case
+    @semaphore_webhook_hash[:repository][:slug] = 'AnesHodza/Test-Repo'
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert_equal 'aneshodza/test-repo', Gnosis::Deployment.last.repository
+  end
+
+  def test_handle_semaphore_keeps_the_deployment_when_the_comparison_fails
+    Octokit::Client.any_instance.stubs(:compare).raises(Octokit::NotFound)
+
+    assert_difference('Gnosis::Deployment.count', 1) do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+    assert_empty Gnosis::Deployment.last.commits
   end
 end

@@ -148,4 +148,16 @@ class PullRequestTest < ActiveSupport::TestCase
                        .returns(Gnosis::PullRequest.new(url: url)).then.returns(existing)
     existing
   end
+
+  def test_stores_the_repository_of_its_url
+    pr = FactoryBot.create(:pull_request, url: 'https://github.com/Renuo/Gnosis/pull/57')
+
+    assert_equal 'renuo/gnosis', pr.repository
+  end
+
+  def test_has_no_repository_for_a_non_github_url
+    pr = FactoryBot.create(:pull_request, url: 'example.com/1')
+
+    assert_nil pr.repository
+  end
 end
