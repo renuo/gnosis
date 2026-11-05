@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Deployments page lists every deployment
+
+Main deployments without a ticket (depfu updates, small fixes pushed straight to `main`) now show up on the deployments page.
+Their changes are listed under "No ticket" with the commit message.
+A deployment belongs to a project when its repository has pull requests for tickets of that project.
+
+Run the migration after updating the plugin. It backfills the existing deployments:
+
+```sh
+bundle exec rake redmine:plugins:migrate NAME=gnosis
+```
+
 ## 2.0.0
 
 ### Breaking Changes

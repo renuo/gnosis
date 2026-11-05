@@ -7,7 +7,7 @@
 abort "Refusing to seed the #{Rails.env} database, development only." unless Rails.env.development?
 
 LOGIN = 'developer'
-PASSWORD = 'gnosisdev'
+PASSWORD = 'gnosisdeveloper'
 
 Redmine::DefaultData::Loader.load('en') if Redmine::DefaultData::Loader.no_data?
 
@@ -87,6 +87,8 @@ pull_requests = [
                        github_updated_at: Time.zone.now)
 
   attributes[:deployments].each do |deployment|
+    Gnosis::Deployment.record(url: deployment[:url], branch: deployment[:branch], repository: 'renuo/gnosis',
+                              has_passed: deployment[:passed], ci_date: deployment[:days_ago].days.ago)
     Gnosis::PullRequestDeployment.auto_create_or_update(deployment[:branch], pull_request.id, deployment[:url],
                                                         deployment[:passed],
                                                         deployment[:days_ago].days.ago.iso8601)
@@ -95,8 +97,13 @@ pull_requests = [
   pull_request
 end
 
+Gnosis::Deployment.record(url: 'https://renuo.semaphoreci.com/workflows/5e1d0c7a-main', branch: 'main',
+                          repository: 'renuo/gnosis', has_passed: true, ci_date: 3.days.ago)
+                  .record_commits([['4b825dc642cb6eb9a060e54bf8d69288fbee4904', 'Bump rails from 8.0.1 to 8.0.2 (#56)'],
+                                   ['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391', 'Fix typo in README']])
+
 puts <<~SUMMARY
   Seeded #{issues.size} tickets, #{pull_requests.size} pull requests and
-  #{Gnosis::PullRequestDeployment.count} deployments in project "#{project.name}".
+  #{Gnosis::Deployment.count} deployments in project "#{project.name}".
   Log in as #{LOGIN} : #{PASSWORD} (or admin : admin) and open /projects/#{project.identifier}/issues.
 SUMMARY

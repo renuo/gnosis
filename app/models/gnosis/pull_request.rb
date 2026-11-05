@@ -7,6 +7,8 @@ module Gnosis
 
     validates :url, uniqueness: true
 
+    before_save { self.repository = RepositorySlug.from_url(url) }
+
     def self.auto_create_or_update(webhook_params)
       create_or_update_from_webhook(webhook_params)
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e

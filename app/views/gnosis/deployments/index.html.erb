@@ -4,14 +4,17 @@
 
 <h2>Deployments (main)</h2>
 
-<% if @grouped_deployments.empty? %>
+<% if @deployment_rows.empty? %>
   <p class="nodata">No deployments found for this project.</p>
 <% else %>
-  <% @grouped_deployments.each do |url, deployments, deployments_by_issue| %>
-    <% representative = deployments.first %>
+  <% @deployment_rows.each do |deployment, pull_requests_by_issue, untracked_commits| %>
+    <% cycle_name = "deployment-#{deployment.id}" %>
     <div class="deployment-card">
       <div class="deployment-card-header">
-        <a href="<%= url %>" target="_blank"><%= I18n.l(representative.ci_date, format: '%A') %> <%= format_time(representative.ci_date) %></a>
+        <a href="<%= deployment.url %>" target="_blank"><%= I18n.l(deployment.ci_date, format: '%A') %> <%= format_time(deployment.ci_date) %></a>
+        <% if deployment.repository %>
+          <span class="deployment-repository"><%= deployment.repository %></span>
+        <% end %>
       </div>
       <table class="list">
         <thead>
@@ -21,26 +24,45 @@
         </tr>
         </thead>
         <tbody>
-        <% deployments_by_issue.each_value do |issue_deployments| %>
-          <% issue = issue_deployments.first.pull_request.issue %>
-          <tr class="<%= cycle('odd', 'even', name: url) %>">
+        <% pull_requests_by_issue.each do |issue, pull_requests| %>
+          <tr class="<%= cycle('odd', 'even', name: cycle_name) %>">
             <td class="deployment-pivot-ticket" colspan="2">
-              <%= link_to "##{issue.id} #{h issue.subject}", issue_path(issue) %>
+              <% if issue.visible? %>
+                <%= link_to "##{issue.id} #{issue.subject}", issue_path(issue) %>
+              <% else %>
+                <span class="deployment-hidden-ticket">#<%= issue.id %></span>
+              <% end %>
             </td>
           </tr>
-          <% issue_deployments.each_with_index do |deployment, index| %>
-            <tr class="<%= cycle('odd', 'even', name: url) %>">
+          <% pull_requests.each do |pull_request| %>
+            <tr class="<%= cycle('odd', 'even', name: cycle_name) %>">
               <td class="deployment-pivot-ticket">
               </td>
               <td class="deployment-pr-title">
-                <a href="<%= deployment.pull_request.url %>" target="_blank">
-                  <%= h deployment.pull_request.title %>
-                </a>
+                <a href="<%= pull_request.url %>" target="_blank"><%= pull_request.title %></a>
               </td>
             </tr>
           <% end %>
         <% end %>
-        <% reset_cycle(url) %>
+        <% if untracked_commits.any? %>
+          <tr class="<%= cycle('odd', 'even', name: cycle_name) %>">
+            <td class="deployment-pivot-ticket deployment-no-ticket" colspan="2">No ticket</td>
+          </tr>
+          <% untracked_commits.each do |commit| %>
+            <tr class="<%= cycle('odd', 'even', name: cycle_name) %>">
+              <td class="deployment-pivot-ticket">
+              </td>
+              <td class="deployment-commit">
+                <a href="<%= commit.url %>" target="_blank"><code><%= commit.short_sha %></code> <%= commit.message %></a>
+              </td>
+            </tr>
+          <% end %>
+        <% elsif pull_requests_by_issue.empty? %>
+          <tr>
+            <td class="deployment-no-ticket" colspan="2">No change details available.</td>
+          </tr>
+        <% end %>
+        <% reset_cycle(cycle_name) %>
         </tbody>
       </table>
     </div>
