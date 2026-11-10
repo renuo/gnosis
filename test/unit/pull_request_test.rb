@@ -7,6 +7,7 @@ class PullRequestTest < ActiveSupport::TestCase
   LATER = '2024-01-01T11:00:00Z'
 
   def setup
+    @issue = Issue.find(1)
     @github_webhook_hash = {
       pull_request: {
         state: 'closed',
@@ -27,7 +28,7 @@ class PullRequestTest < ActiveSupport::TestCase
 
   def test_create_pull_request
     assert_difference('Gnosis::PullRequest.count', 1) do
-      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue_id: 1)
+      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue: @issue)
     end
 
     pr = Gnosis::PullRequest.last
@@ -39,10 +40,10 @@ class PullRequestTest < ActiveSupport::TestCase
     webhook_hash = @github_webhook_hash.dup
     webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'open', merged: false, updated_at: EARLIER)
 
-    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue: @issue)
     webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'closed', merged: false, updated_at: LATER)
     assert_difference('Gnosis::PullRequest.count', 0) do
-      Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue_id: 1)
+      Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue: @issue)
     end
 
     pr = Gnosis::PullRequest.last
@@ -60,7 +61,7 @@ class PullRequestTest < ActiveSupport::TestCase
     existing = create_concurrently_created_pull_request
 
     assert_difference('Gnosis::PullRequest.count', 0) do
-      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue_id: 1)
+      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue: @issue)
     end
 
     assert_equal 'merged', existing.reload.state
@@ -72,19 +73,19 @@ class PullRequestTest < ActiveSupport::TestCase
     Gnosis::PullRequest.any_instance.stubs(:valid?).returns(true)
 
     assert_difference('Gnosis::PullRequest.count', 0) do
-      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue_id: 1)
+      Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue: @issue)
     end
 
     assert_equal 'merged', existing.reload.state
   end
 
   def test_out_of_order_webhook_does_not_overwrite_a_newer_state
-    Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue_id: 1) # merged, at LATER
+    Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue: @issue) # merged, at LATER
 
     stale_hash = @github_webhook_hash.dup
     stale_hash[:pull_request] = stale_hash[:pull_request].merge(state: 'open', merged: false, updated_at: EARLIER)
     assert_difference('Gnosis::PullRequest.count', 0) do
-      Gnosis::PullRequest.auto_create_or_update(stale_hash, issue_id: 1)
+      Gnosis::PullRequest.auto_create_or_update(stale_hash, issue: @issue)
     end
 
     pr = Gnosis::PullRequest.last
@@ -94,11 +95,11 @@ class PullRequestTest < ActiveSupport::TestCase
   def test_out_of_order_webhook_does_not_reopen_a_more_recently_closed_pull_request
     webhook_hash = @github_webhook_hash.dup
     webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'closed', merged: false, updated_at: LATER)
-    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue: @issue)
 
     stale_hash = @github_webhook_hash.dup
     stale_hash[:pull_request] = stale_hash[:pull_request].merge(state: 'open', merged: false, updated_at: EARLIER)
-    Gnosis::PullRequest.auto_create_or_update(stale_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(stale_hash, issue: @issue)
 
     pr = Gnosis::PullRequest.last
     assert_equal 'closed', pr.state
@@ -108,7 +109,7 @@ class PullRequestTest < ActiveSupport::TestCase
     draft_hash = @github_webhook_hash.dup
     draft_hash[:pull_request] = draft_hash[:pull_request].merge(state: 'open', draft: true, merged: false,
                                                                 merge_commit_sha: nil, updated_at: LATER)
-    Gnosis::PullRequest.auto_create_or_update(draft_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(draft_hash, issue: @issue)
     assert_equal 'draft', Gnosis::PullRequest.last.state
 
     pr_hash = @github_webhook_hash.dup
@@ -119,7 +120,7 @@ class PullRequestTest < ActiveSupport::TestCase
     # webhooks carry the same `updated_at`. The merge must still be applied.
     assert_equal draft_hash[:pull_request][:updated_at], pr_hash[:pull_request][:updated_at]
 
-    Gnosis::PullRequest.auto_create_or_update(pr_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(pr_hash, issue: @issue)
 
     pr = Gnosis::PullRequest.last
     assert_equal 'merged', pr.state
@@ -130,7 +131,7 @@ class PullRequestTest < ActiveSupport::TestCase
     webhook_hash = @github_webhook_hash.dup
     webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'closed', draft: true, merged: false)
 
-    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue_id: 1)
+    Gnosis::PullRequest.auto_create_or_update(webhook_hash, issue: @issue)
 
     pr = Gnosis::PullRequest.find_by(url: webhook_hash[:pull_request][:html_url])
     assert_equal 'closed', pr.state

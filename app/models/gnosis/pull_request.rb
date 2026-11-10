@@ -7,23 +7,22 @@ module Gnosis
 
     validates :url, uniqueness: true
 
-    def self.auto_create_or_update(webhook_params, issue_id:)
-      create_or_update_from_webhook(webhook_params, issue_id: issue_id)
+    def self.auto_create_or_update(webhook_params, issue:)
+      create_or_update_from_webhook(webhook_params, issue: issue)
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
       raise unless url_taken?(e)
 
       # GitHub sends several events at once when a PR is opened (e.g. `opened`
       # and `review_requested`). A concurrent request created the record between
       # our lookup and our insert, so run again to update it instead.
-      create_or_update_from_webhook(webhook_params, issue_id: issue_id)
+      create_or_update_from_webhook(webhook_params, issue: issue)
     end
 
-    def self.create_or_update_from_webhook(webhook_params, issue_id:)
+    def self.create_or_update_from_webhook(webhook_params, issue:)
       pull_request_data = webhook_params[:pull_request]
 
       state = pull_request_data[:merged] ? 'merged' : pull_request_data[:state]
       state = 'draft' if state == 'open' && pull_request_data[:draft]
-      return if Issue.find_by(id: issue_id).nil?
 
       pr = PullRequest.find_or_initialize_by(url: pull_request_data[:html_url])
       github_updated_at = pull_request_data[:updated_at] && Time.zone.parse(pull_request_data[:updated_at].to_s)
@@ -37,7 +36,7 @@ module Gnosis
                  was_merged: pull_request_data[:merged],
                  merge_commit_sha: pull_request_data[:merge_commit_sha],
                  github_updated_at: [github_updated_at, pr.github_updated_at].compact.max,
-                 issue_id: issue_id)
+                 issue: issue)
     end
 
     def self.url_taken?(error)

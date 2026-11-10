@@ -7,11 +7,10 @@ module Gnosis
     end
 
     def handle_github(params)
-      number = NumberExtractor.call(params)
+      issue = Issue.find_by(id: NumberExtractor.call(params))
+      return unless issue
 
-      return unless number.present? && Issue.exists?(id: number)
-
-      PullRequest.auto_create_or_update(params, issue_id: number)
+      PullRequest.auto_create_or_update(params, issue: issue)
     end
 
     def handle_semaphore(params)

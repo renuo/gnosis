@@ -75,7 +75,7 @@ class WebhookCatchControllerControllerTest < ActionController::TestCase
   end
 
   def test_update_pull_request_existing_url
-    Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue_id: Issue.first.id)
+    Gnosis::PullRequest.auto_create_or_update(@github_webhook_hash, issue: Issue.first)
     @request.headers['X-Hub-Signature-256'] =
       'sha256=4256f0ad4e317084d15e7ffeecb6e66667f45d12fcbd5ad0fecf4c0e31802ce2'
     @github_webhook_hash[:pull_request][:state] = 'open'
