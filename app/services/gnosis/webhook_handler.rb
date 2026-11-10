@@ -11,7 +11,7 @@ module Gnosis
 
       return unless number.present? && Issue.exists?(id: number)
 
-      PullRequest.auto_create_or_update(params.merge(issue_id: number))
+      PullRequest.auto_create_or_update(params, issue_id: number)
     end
 
     def handle_semaphore(params)
