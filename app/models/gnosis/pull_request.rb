@@ -7,18 +7,18 @@ module Gnosis
 
     validates :url, uniqueness: true
 
-    def self.auto_create_or_update(webhook_params, issue:)
-      create_or_update_from_webhook(webhook_params, issue: issue)
+    def self.auto_create_or_update(issue, webhook_params)
+      create_or_update_from_webhook(issue, webhook_params)
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
       raise unless url_taken?(e)
 
       # GitHub sends several events at once when a PR is opened (e.g. `opened`
       # and `review_requested`). A concurrent request created the record between
       # our lookup and our insert, so run again to update it instead.
-      create_or_update_from_webhook(webhook_params, issue: issue)
+      create_or_update_from_webhook(issue, webhook_params)
     end
 
-    def self.create_or_update_from_webhook(webhook_params, issue:)
+    def self.create_or_update_from_webhook(issue, webhook_params)
       pull_request_data = webhook_params[:pull_request]
 
       state = pull_request_data[:merged] ? 'merged' : pull_request_data[:state]

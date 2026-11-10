@@ -10,7 +10,7 @@ module Gnosis
       issue = Issue.find_by(id: NumberExtractor.call(params))
       return unless issue
 
-      PullRequest.auto_create_or_update(params, issue: issue)
+      PullRequest.auto_create_or_update(issue, params)
     end
 
     def handle_semaphore(params)
