@@ -120,6 +120,32 @@ class WebhookHandlerTest < ActiveSupport::TestCase
     end
   end
 
+  def test_handle_semaphore_creates_a_deployment_for_every_open_pull_request_of_the_deployed_head
+    into_main = FactoryBot.create(:pull_request, state: 'open', was_merged: false, merge_commit_sha: nil,
+                                                 source_branch: 'hotfix/1-fix', target_branch: 'main',
+                                                 head_sha: 'another_hash')
+    into_develop = FactoryBot.create(:pull_request, state: 'open', was_merged: false, merge_commit_sha: nil,
+                                                    source_branch: 'hotfix/1-fix', target_branch: 'develop',
+                                                    head_sha: 'another_hash')
+
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert Gnosis::PullRequestDeployment.exists?(pull_request: into_main)
+    assert Gnosis::PullRequestDeployment.exists?(pull_request: into_develop)
+  end
+
+  def test_handle_semaphore_creates_deployments_for_a_merged_pull_request_and_the_open_one_headed_by_its_merge
+    release = FactoryBot.create(:pull_request, state: 'open', was_merged: false, merge_commit_sha: nil,
+                                               source_branch: 'develop', target_branch: 'main',
+                                               head_sha: @pull_request.merge_commit_sha)
+    @semaphore_webhook_hash[:revision][:branch][:name] = 'develop'
+
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert Gnosis::PullRequestDeployment.exists?(pull_request: @pull_request)
+    assert Gnosis::PullRequestDeployment.exists?(pull_request: release)
+  end
+
   def test_handle_semaphore_records_a_failed_pipeline
     @semaphore_webhook_hash[:pipeline][:result] = 'failed'
     Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
