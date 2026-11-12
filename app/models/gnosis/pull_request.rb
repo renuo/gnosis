@@ -34,7 +34,7 @@ module Gnosis
                  source_branch: pull_request_data[:head][:ref],
                  target_branch: pull_request_data[:base][:ref],
                  was_merged: pull_request_data[:merged],
-                 merge_commit_sha: pull_request_data[:merge_commit_sha],
+                 merge_commit_sha: pull_request_data[:merged] ? pull_request_data[:merge_commit_sha] : nil,
                  github_updated_at: [github_updated_at, pr.github_updated_at].compact.max,
                  issue: issue)
     end
