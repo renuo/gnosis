@@ -34,6 +34,25 @@ class PullRequestTest < ActiveSupport::TestCase
     pr = Gnosis::PullRequest.last
     assert_equal 'merged', pr.state
     assert_equal Time.zone.parse(LATER), pr.github_updated_at
+    assert_equal '19a89f0050eacf201ccd058d5e28cddf2b035bfc', pr.merge_commit_sha
+  end
+
+  def test_open_pull_request_does_not_record_the_test_merge_commit
+    webhook_hash = @github_webhook_hash.dup
+    webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'open', merged: false)
+
+    Gnosis::PullRequest.auto_create_or_update(@issue, webhook_hash)
+
+    assert_nil Gnosis::PullRequest.last.merge_commit_sha
+  end
+
+  def test_pull_request_closed_without_merging_does_not_record_the_test_merge_commit
+    webhook_hash = @github_webhook_hash.dup
+    webhook_hash[:pull_request] = webhook_hash[:pull_request].merge(state: 'closed', merged: false)
+
+    Gnosis::PullRequest.auto_create_or_update(@issue, webhook_hash)
+
+    assert_nil Gnosis::PullRequest.last.merge_commit_sha
   end
 
   def test_update_pull_request
