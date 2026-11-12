@@ -7,6 +7,9 @@ module Gnosis
 
     validates :url, uniqueness: true
 
+    scope :open, -> { where(state: %w[open draft]) }
+    scope :merged, -> { where(state: 'merged') }
+
     def self.auto_create_or_update(issue, webhook_params)
       create_or_update_from_webhook(issue, webhook_params)
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
@@ -35,6 +38,7 @@ module Gnosis
                  target_branch: pull_request_data[:base][:ref],
                  was_merged: pull_request_data[:merged],
                  merge_commit_sha: pull_request_data[:merged] ? pull_request_data[:merge_commit_sha] : nil,
+                 head_sha: pull_request_data[:head][:sha],
                  github_updated_at: [github_updated_at, pr.github_updated_at].compact.max,
                  issue: issue)
     end

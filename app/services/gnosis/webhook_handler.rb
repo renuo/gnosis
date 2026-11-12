@@ -37,7 +37,7 @@ module Gnosis
 
     def create_deploys_for_pull_requests(url, sha_between, branch, passed, time)
       sha_between.each do |sha|
-        pr = PullRequest.find_by(merge_commit_sha: sha)
+        pr = PullRequest.open.where(head_sha: sha).or(PullRequest.merged.where(merge_commit_sha: sha)).take
         next unless pr
 
         PullRequestDeployment.auto_create_or_update(branch, pr.id, url, passed, time)
