@@ -86,6 +86,6 @@ class SetupRedmineTest < ActiveSupport::TestCase
 
   def git(path, *args)
     system('git', '-C', path, '-c', 'user.name=test', '-c', 'user.email=test@example.com',
-           '-c', 'commit.gpgsign=false', *args, exception: true, out: File::NULL)
+           '-c', 'commit.gpgsign=false', '-c', 'tag.gpgsign=false', *args, exception: true, out: File::NULL)
   end
 end

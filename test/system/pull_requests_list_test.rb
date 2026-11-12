@@ -61,6 +61,18 @@ class PullRequestListTest < GnosisSystemTest
     assert page.has_content?('closed')
   end
 
+  def test_open_state_icon_displayed
+    FactoryBot.create(:pull_request, issue_id: 1, state: 'open')
+    visit 'issues/1'
+    assert page.has_css?('.gnosis-pr-state', text: '🟢 open')
+  end
+
+  def test_unknown_state_icon_displayed
+    FactoryBot.create(:pull_request, issue_id: 1, state: 'unknown')
+    visit 'issues/1'
+    assert page.has_css?('.gnosis-pr-state', text: '❓ unknown')
+  end
+
   def test_tree_connectors_displayed
     assert page.has_text?('├──') || page.has_text?('└──')
   end
