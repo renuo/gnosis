@@ -84,6 +84,42 @@ class WebhookHandlerTest < ActiveSupport::TestCase
     assert_equal Time.zone.parse('2021-03-03T12:00:00Z'), deployment.ci_date
   end
 
+  def test_handle_semaphore_creates_deployment_for_the_head_of_an_open_pull_request
+    review_app_pull_request = FactoryBot.create(:pull_request, state: 'open', was_merged: false,
+                                                               head_sha: 'another_hash', merge_commit_sha: nil)
+    @semaphore_webhook_hash[:revision][:branch][:name] = 'feature/1-some-feature'
+
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    deployment = Gnosis::PullRequestDeployment.find_by!(pull_request: review_app_pull_request)
+    assert_equal 'feature/1-some-feature', deployment.deploy_branch
+  end
+
+  def test_handle_semaphore_creates_deployment_for_the_head_of_a_draft_pull_request
+    review_app_pull_request = FactoryBot.create(:pull_request, state: 'draft', was_merged: false,
+                                                               head_sha: 'another_hash', merge_commit_sha: nil)
+
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert Gnosis::PullRequestDeployment.exists?(pull_request: review_app_pull_request)
+  end
+
+  def test_handle_semaphore_ignores_the_merge_commit_of_a_pull_request_that_is_not_merged
+    @pull_request.update!(state: 'open', was_merged: false, head_sha: 'unrelated_hash')
+
+    assert_no_difference('Gnosis::PullRequestDeployment.count') do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+  end
+
+  def test_handle_semaphore_ignores_the_head_of_a_merged_pull_request
+    @pull_request.update!(merge_commit_sha: 'unrelated_hash', head_sha: 'another_hash')
+
+    assert_no_difference('Gnosis::PullRequestDeployment.count') do
+      Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    end
+  end
+
   def test_handle_semaphore_records_a_failed_pipeline
     @semaphore_webhook_hash[:pipeline][:result] = 'failed'
     Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
