@@ -14,7 +14,8 @@ class PullRequestTest < ActiveSupport::TestCase
         html_url: 'https://github.com/aneshodza/test-repo/pull/17',
         title: 'Create something',
         head: {
-          ref: 'feature/1-some-feature'
+          ref: 'feature/1-some-feature',
+          sha: 'a3f1c2e9d8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3'
         },
         base: {
           ref: 'main'
@@ -35,6 +36,7 @@ class PullRequestTest < ActiveSupport::TestCase
     assert_equal 'merged', pr.state
     assert_equal Time.zone.parse(LATER), pr.github_updated_at
     assert_equal '19a89f0050eacf201ccd058d5e28cddf2b035bfc', pr.merge_commit_sha
+    assert_equal 'a3f1c2e9d8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3', pr.head_sha
   end
 
   def test_open_pull_request_does_not_record_the_test_merge_commit
