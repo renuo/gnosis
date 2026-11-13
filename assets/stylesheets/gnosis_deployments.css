@@ -40,3 +40,86 @@
     border-left: 1px solid #eee;
   }
 }
+
+.release-repository {
+  font-size: 1.1em;
+
+  .release-branches {
+    margin-left: 8px;
+    color: #666;
+    font-family: monospace;
+  }
+}
+
+.release-form {
+  .release-summary {
+    margin-left: 8px;
+    font-weight: normal;
+    color: #666;
+  }
+
+  .release-compare-link {
+    float: right;
+    font-weight: normal;
+  }
+
+  .release-card-body {
+    padding: 8px 12px;
+  }
+
+  .release-commits .release-sha {
+    margin-right: 6px;
+    font-family: monospace;
+  }
+
+  .release-commit-author {
+    width: 20%;
+  }
+
+  .release-update-types,
+  .release-version-files {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 4px 0;
+    }
+  }
+
+  .release-next-version,
+  .release-custom-version {
+    margin-left: 6px;
+    font-family: monospace;
+  }
+
+  .release-next-version {
+    color: #666;
+  }
+
+  .release-hint {
+    margin-top: 0;
+    color: #666;
+  }
+
+  .release-version-file-lines {
+    margin: 4px 0 0 24px;
+    padding: 6px 8px;
+    overflow-x: auto;
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .release-friday-warning {
+    padding: 6px 8px;
+    background: #fff4d5;
+    border: 1px solid #e8d18a;
+    border-radius: 3px;
+  }
+
+  .release-confirmation .buttons {
+    margin-bottom: 0;
+  }
+}

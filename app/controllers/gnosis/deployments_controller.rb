@@ -7,6 +7,7 @@ module Gnosis
 
     DEPLOYMENTS_PER_PAGE = 20
     def index
+      @repository = GithubRepository.for(@project)
       base_scope = PullRequestDeployment
                    .joins(pull_request: :issue)
                    .where(issues: { project_id: @project.id })
