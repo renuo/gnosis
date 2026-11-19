@@ -16,6 +16,7 @@ module Gnosis
     def handle_semaphore(params)
       range = params[:revision][:branch][:commit_range]
       branch = params[:revision][:branch][:name]
+      pipeline_file = params[:pipeline][:yaml_file_name]
       repo = params[:repository][:slug]
       passed = params[:pipeline][:result] == 'passed'
       time = params[:pipeline][:done_at]
@@ -26,7 +27,8 @@ module Gnosis
       first_sha, last_sha = range.split('...')
 
       sha_between = fetch_commit_history(repo, first_sha, last_sha)
-      create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, passed, time)
+      create_deploys_for_pull_requests(semaphore_url(org, workflow_id), sha_between, branch, pipeline_file, passed,
+                                       time)
     rescue Octokit::NotFound => e
       Rails.logger.error("[Gnosis::WebhookHandler] Comparison not found for #{repo}: #{e.message}")
     rescue Octokit::TooManyRequests => e
@@ -35,11 +37,11 @@ module Gnosis
 
     private
 
-    def create_deploys_for_pull_requests(url, sha_between, branch, passed, time)
+    def create_deploys_for_pull_requests(url, sha_between, branch, pipeline_file, passed, time)
       deployed_pull_requests = PullRequest.open.where(head_sha: sha_between)
                                           .or(PullRequest.merged.where(merge_commit_sha: sha_between))
       deployed_pull_requests.each do |pr|
-        PullRequestDeployment.auto_create_or_update(branch, pr.id, url, passed, time)
+        PullRequestDeployment.auto_create_or_update(branch, pipeline_file, pr.id, url, passed, time)
       end
     end
 

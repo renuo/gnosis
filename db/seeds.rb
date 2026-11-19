@@ -59,16 +59,18 @@ MAIN_DEPLOYMENT_URL = 'https://renuo.semaphoreci.com/workflows/9f3c1a2b-main'
 pull_requests = [
   { issue: issues[0], number: 51, title: 'Make the plugin developable without a Redmine checkout around it',
     branch: 'feature/%<id>d-improve-setup', state: 'merged', merged: true,
-    deployments: [{ branch: 'main', url: MAIN_DEPLOYMENT_URL, passed: true, days_ago: 1 },
-                  { branch: 'staging', url: 'https://renuo.semaphoreci.com/workflows/3ac9e01d-staging',
-                    passed: true, days_ago: 2 }] },
+    deployments: [{ branch: 'main', pipeline: 'main-deploy.yml', url: MAIN_DEPLOYMENT_URL,
+                    passed: true, days_ago: 1 },
+                  { branch: 'staging', pipeline: 'staging-deploy.yml',
+                    url: 'https://renuo.semaphoreci.com/workflows/3ac9e01d-staging', passed: true, days_ago: 2 }] },
   { issue: issues[1], number: 49, title: 'Fix stale webhook overwrites',
     branch: 'fix/%<id>d-stale-webhooks', state: 'merged', merged: true,
-    deployments: [{ branch: 'main', url: MAIN_DEPLOYMENT_URL, passed: true, days_ago: 1 }] },
+    deployments: [{ branch: 'main', pipeline: 'main-deploy.yml', url: MAIN_DEPLOYMENT_URL,
+                    passed: true, days_ago: 1 }] },
   { issue: issues[2], number: 53, title: 'Add a deployments page',
     branch: 'feature/%<id>d-deployments-page', state: 'open', merged: false,
-    deployments: [{ branch: 'staging', url: 'https://renuo.semaphoreci.com/workflows/7bd42f88-staging',
-                    passed: false, days_ago: 0 }] },
+    deployments: [{ branch: 'staging', pipeline: 'staging-deploy.yml',
+                    url: 'https://renuo.semaphoreci.com/workflows/7bd42f88-staging', passed: false, days_ago: 0 }] },
   { issue: issues[2], number: 54, title: 'Paginate the deployments page',
     branch: 'feature/%<id>d-deployments-pagination', state: 'draft', merged: false, deployments: [] },
   { issue: issues[1], number: 42, title: 'Drop webhooks with an unknown ticket number',
@@ -87,8 +89,8 @@ pull_requests = [
                        github_updated_at: Time.zone.now)
 
   attributes[:deployments].each do |deployment|
-    Gnosis::PullRequestDeployment.auto_create_or_update(deployment[:branch], pull_request.id, deployment[:url],
-                                                        deployment[:passed],
+    Gnosis::PullRequestDeployment.auto_create_or_update(deployment[:branch], deployment[:pipeline], pull_request.id,
+                                                        deployment[:url], deployment[:passed],
                                                         deployment[:days_ago].days.ago.iso8601)
   end
 
