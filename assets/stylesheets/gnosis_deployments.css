@@ -10,6 +10,12 @@
     border-bottom: 1px solid #d7d7d7;
     font-size: 1.1em;
     font-weight: bold;
+
+    .deployment-target {
+      margin-left: 8px;
+      font-weight: normal;
+      color: #888;
+    }
   }
 
   table.list {

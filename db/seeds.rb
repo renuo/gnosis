@@ -61,6 +61,8 @@ pull_requests = [
     branch: 'feature/%<id>d-improve-setup', state: 'merged', merged: true,
     deployments: [{ branch: 'main', pipeline: 'main-deploy.yml', url: MAIN_DEPLOYMENT_URL,
                     passed: true, days_ago: 1 },
+                  { branch: 'main', pipeline: 'production-ch-deploy.yml', url: MAIN_DEPLOYMENT_URL,
+                    passed: true, days_ago: 1 },
                   { branch: 'staging', pipeline: 'staging-deploy.yml',
                     url: 'https://renuo.semaphoreci.com/workflows/3ac9e01d-staging', passed: true, days_ago: 2 }] },
   { issue: issues[1], number: 49, title: 'Fix stale webhook overwrites',

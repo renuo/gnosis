@@ -11,5 +11,10 @@ module Gnosis
                                                            pull_request_id: pull_request_id)
       deploy.update!(url: url, has_passed: has_passed, ci_date: ci_date)
     end
+
+    def target_label
+      target = pipeline_file&.delete_suffix('.yml')&.delete_suffix('-deploy')
+      target unless target == deploy_branch
+    end
   end
 end
