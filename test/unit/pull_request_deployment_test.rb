@@ -64,4 +64,30 @@ class PullRequestDeploymentTest < ActiveSupport::TestCase
                  Gnosis::PullRequestDeployment.where(pull_request_id: deploy.pull_request_id)
                                               .order(:pipeline_file).pluck(:pipeline_file)
   end
+
+  def test_target_label_names_the_target_of_the_pipeline
+    deploy = FactoryBot.build(:pull_request_deployment, deploy_branch: 'main',
+                                                        pipeline_file: 'production-ch-deploy.yml')
+
+    assert_equal 'production-ch', deploy.target_label
+  end
+
+  def test_target_label_names_the_review_app_of_a_feature_branch
+    deploy = FactoryBot.build(:pull_request_deployment, deploy_branch: 'feature/1-login',
+                                                        pipeline_file: 'review-app-deploy.yml')
+
+    assert_equal 'review-app', deploy.target_label
+  end
+
+  def test_target_label_is_empty_for_a_pipeline_named_after_its_branch
+    deploy = FactoryBot.build(:pull_request_deployment, deploy_branch: 'main', pipeline_file: 'main-deploy.yml')
+
+    assert_nil deploy.target_label
+  end
+
+  def test_target_label_is_empty_for_a_deployment_recorded_without_a_pipeline
+    deploy = FactoryBot.build(:pull_request_deployment, deploy_branch: 'main', pipeline_file: nil)
+
+    assert_nil deploy.target_label
+  end
 end

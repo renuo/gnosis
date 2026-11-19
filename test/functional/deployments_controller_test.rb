@@ -70,6 +70,25 @@ class DeploymentsControllerTest < ActionController::TestCase
     assert_select '.deployment-card table.list tbody tr', 4
   end
 
+  def test_index_shows_a_card_per_pipeline_of_a_workflow
+    FactoryBot.create(:pull_request_deployment, pull_request: @pr, deploy_branch: 'main',
+                                                pipeline_file: 'production-ch-deploy.yml', url: @deployment_main.url)
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 2
+    assert_select '.deployment-card-header .deployment-target', count: 1, text: 'production-ch'
+  end
+
+  def test_index_does_not_label_a_pipeline_named_after_its_branch
+    @deployment_main.update!(pipeline_file: 'main-deploy.yml')
+
+    get :index, params: { project_id: @project.identifier }
+    assert_response :success
+    assert_select '.deployment-card', 1
+    assert_select '.deployment-target', 0
+  end
+
   def test_index_empty_project
     project2 = Project.create!(name: 'EmptyProject', identifier: 'emptyproject')
     project2.enabled_modules.find_or_create_by!(name: 'gnosis')
