@@ -31,6 +31,7 @@ class WebhookHandlerTest < ActiveSupport::TestCase
         }
       },
       pipeline: {
+        yaml_file_name: 'main-deploy.yml',
         result: 'passed',
         done_at: '2021-03-03T12:00:00Z'
       },
@@ -79,9 +80,21 @@ class WebhookHandlerTest < ActiveSupport::TestCase
     deployment = Gnosis::PullRequestDeployment.last
     assert_equal @pull_request.id, deployment.pull_request_id
     assert_equal 'main', deployment.deploy_branch
+    assert_equal 'main-deploy.yml', deployment.pipeline_file
     assert deployment.has_passed
     assert_equal 'https://aneshodza.semaphoreci.com/workflows/5432cce0-196d-4898-9385-c1d670e4a9e9/', deployment.url
     assert_equal Time.zone.parse('2021-03-03T12:00:00Z'), deployment.ci_date
+  end
+
+  def test_handle_semaphore_keeps_a_deployment_per_pipeline_of_the_branch
+    @semaphore_webhook_hash[:pipeline][:yaml_file_name] = 'production-ch-deploy.yml'
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+    @semaphore_webhook_hash[:pipeline][:yaml_file_name] = 'production-de-deploy.yml'
+    Gnosis::WebhookHandler.new.handle_semaphore(@semaphore_webhook_hash)
+
+    assert_equal %w[production-ch-deploy.yml production-de-deploy.yml],
+                 Gnosis::PullRequestDeployment.where(pull_request: @pull_request, deploy_branch: 'main')
+                                              .order(:pipeline_file).pluck(:pipeline_file)
   end
 
   def test_handle_semaphore_creates_deployment_for_the_head_of_an_open_pull_request

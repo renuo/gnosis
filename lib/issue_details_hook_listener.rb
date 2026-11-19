@@ -88,19 +88,14 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
 
   def set_deployment_strings
     @deployments_strings = @deployments.map do |deployment_list|
-      deployments_by_branch = {}
-      deployment_list.each { |deployment| deployments_by_branch[deployment['deploy_branch']] = deployment }
+      next '' if deployment_list.empty?
 
-      branches = deployments_by_branch.keys
-      next '' if branches.empty?
-
-      rows = branches.each_with_index.map do |branch, idx|
-        deployment = deployments_by_branch[branch]
-        connector = idx == branches.length - 1 ? '└──' : '├──'
+      rows = deployment_list.each_with_index.map do |deployment, idx|
+        connector = idx == deployment_list.length - 1 ? '└──' : '├──'
         <<-ROW
           <a href='#{deployment['url']}' target='_blank' id='deployment-#{deployment['id']}' class="gnosis-deploy-link">
             <span>#{connector}</span>
-            <span>#{branch}</span>
+            <span>#{h [deployment.deploy_branch, deployment.target_label].compact.join(' · ')}</span>
             <span>#{deployment_status_icon(deployment['has_passed'])}</span>
             <span>#{format_deployment_time(deployment['ci_date'])}</span>
           </a>

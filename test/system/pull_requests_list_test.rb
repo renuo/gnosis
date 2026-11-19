@@ -51,6 +51,26 @@ class PullRequestListTest < GnosisSystemTest
     end
   end
 
+  def test_deployments_of_one_branch_to_several_targets_listed
+    FactoryBot.create(:pull_request_deployment, pull_request: @prs[2], deploy_branch: 'main',
+                                                pipeline_file: 'production-ch-deploy.yml')
+    FactoryBot.create(:pull_request_deployment, pull_request: @prs[2], deploy_branch: 'main',
+                                                pipeline_file: 'production-de-deploy.yml')
+    visit 'issues/1'
+
+    assert page.has_content?('main · production-ch')
+    assert page.has_content?('main · production-de')
+  end
+
+  def test_deployment_target_named_after_its_branch_not_repeated
+    deployment = FactoryBot.create(:pull_request_deployment, pull_request: @prs[2], deploy_branch: 'main',
+                                                             pipeline_file: 'main-deploy.yml')
+    visit 'issues/1'
+
+    assert page.has_css?("#deployment-#{deployment.id}")
+    assert page.has_no_content?('main · main')
+  end
+
   def test_pr_state_icons_displayed
     @prs.each do |pr|
       assert page.has_content?(pr.state)

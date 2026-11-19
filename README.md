@@ -45,6 +45,11 @@ Then go to your_org.semaphoreci.com/notifications and click on "New Secret". The
 secret. This should match the `SEMAPHORE_WEBHOOK_SECRET` in your `config/application.yml`.  
 This should now also work just fine!
 
+Name each deploy pipeline after its target: `<target>-deploy.yml`.
+A branch deployed by several pipelines, e.g. `production-ch-deploy.yml` and `production-de-deploy.yml` on `main`,
+gets a deployment per pipeline, labelled `main · production-ch` and `main · production-de`.
+A pipeline named after its branch, like `main-deploy.yml`, is shown as just `main`.
+
 ### Configure GitHub access token
 
 The plugin needs to query the GitHub API every now and then to match-up pull requests with deployments.
