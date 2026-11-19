@@ -32,6 +32,14 @@ class PullRequestListTest < GnosisSystemTest
     end
   end
 
+  def test_pr_title_shown_as_text_not_markup
+    pr = FactoryBot.create(:pull_request, issue_id: 1, title: '<em>Bold</em> move')
+    visit 'issues/1'
+
+    assert page.has_css?("#pr-#{pr.id}", exact_text: '<em>Bold</em> move')
+    assert page.has_no_css?("#pr-#{pr.id} em")
+  end
+
   def test_deployments_all_info_listed
     @prs.each do |pr|
       pr.pull_request_deployments.each do |deployment|

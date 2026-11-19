@@ -121,7 +121,7 @@ class IssueDetailsHookListener < Redmine::Hook::ViewListener
       <<-LISTOBJECT
         <div class="gnosis-pr-entry">
           <div>
-            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' class="gnosis-pr-link">#{pr['title']}</a>
+            <a href='#{pr['url']}' target='_blank' id='pr-#{pr['id']}' class="gnosis-pr-link">#{h pr['title']}</a>
             <span class="gnosis-pr-state">#{state_icon(pr['state'])} #{pr['state']}</span>
           </div>
           #{formatted_deployments}
